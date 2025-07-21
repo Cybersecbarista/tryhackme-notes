@@ -66,3 +66,90 @@
 - Automatically assigns IP addresses.
 - Process:
   - **DHCP Discover** → **DHCP Offer** → **DHCP Request** → **DHCP ACK**
+ 
+  - # OSI Model
+
+## What is the OSI Model?
+
+The **OSI Model (Open Systems Interconnection Model)** provides a framework dictating how all network devices will send, receive, and interpret data.
+
+### Benefits:
+- Devices can have different functions and designs while still communicating effectively.
+- Ensures that data sent across a network can be universally understood.
+
+### OSI Model Layers (Top to Bottom):
+7. Application  
+6. Presentation  
+5. Session  
+4. Transport  
+3. Network  
+2. Data Link  
+1. Physical
+
+### Encapsulation:
+At every layer data travels through, specific processes take place, and new headers or instructions are added.
+
+---
+
+## Layers of the OSI Model
+
+### 1. Physical Layer
+- Deals with physical components of network hardware.
+- Transfers data using electrical signals in binary (1s and 0s).
+- **Example:** Ethernet cables.
+
+### 2. Data Link Layer
+- Focuses on physical (MAC) addressing.
+- Adds MAC address to packets.
+- Uses the NIC (Network Interface Card), which contains a unique MAC address.
+- Formats data for physical transmission.
+
+### 3. Network Layer
+- Handles routing and reassembly of data packets.
+- Determines best path using protocols like **OSPF** and **RIP**.
+- Routing decisions depend on:
+  - Shortest path
+  - Reliability (packet loss history)
+  - Physical connection speed (copper vs fiber)
+- Uses **IP addresses** (e.g., `192.168.1.100`).
+- **Routers** are Layer 3 devices.
+
+### 4. Transport Layer
+- Ensures proper transmission of data between devices.
+- Uses **TCP** and **UDP**.
+
+#### Transmission Control Protocol (TCP)
+- Connection-oriented and reliable.
+- Keeps a constant connection during transmission.
+- Includes error checking and ordered delivery.
+- **Pros:** Accuracy, flow control, error recovery.
+- **Cons:** Slower, requires stable connection.
+
+**Used for:** File transfers, web browsing, emails.
+
+#### User Datagram Protocol (UDP)
+- Connectionless and fast.
+- No error checking or delivery guarantee.
+- **Pros:** Speed, lightweight, minimal resource use.
+- **Cons:** Unreliable on unstable connections.
+
+**Used for:** ARP, DHCP, video streaming, device discovery.
+
+### 5. Session Layer
+- Manages and maintains connections (sessions).
+- Creates and terminates sessions.
+- Uses checkpoints to save bandwidth during reconnections.
+- Each session is isolated.
+
+### 6. Presentation Layer
+- Acts as translator between systems.
+- Converts and standardizes data formats.
+- Handles encryption/decryption (e.g., HTTPS).
+
+### 7. Application Layer
+- Provides interface for user interaction with data.
+- Uses GUI-based applications.
+- Example protocols: **DNS** (translates domain names to IPs).
+
+---
+
