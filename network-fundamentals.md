@@ -152,4 +152,93 @@ At every layer data travels through, specific processes take place, and new head
 - Example protocols: **DNS** (translates domain names to IPs).
 
 ---
+## 📦 Packets and Frames
+
+### 🔍 What Are Packets and Frames?
+- Small pieces of data that, when combined, form a larger piece of information or message.
+- Packets and frames operate at different layers in the OSI model:
+  - **Frame**: Layer 2 (Data Link Layer) — contains no IP address information.
+  - **Packet**: Layer 3 (Network Layer) — includes IP address info.
+- **Encapsulation**: Like putting an envelope (packet) inside another envelope (frame).
+- Once the encapsulating data is removed, the **frame** is exposed.
+- Packets improve efficiency by breaking large messages into smaller, manageable pieces.
+
+### 📜 Packet Structure and Headers
+- Networking follows standards and protocols that define how packets are created, sent, and received.
+- **Packet headers** (common with Internet Protocol):
+  - **Time To Live (TTL)**: Sets an expiry time to prevent network clogging.
+  - **Checksum**: Ensures data integrity (used in TCP/IP).
+  - **Source Address**: IP address of the sending device.
+  - **Destination Address**: IP address of the receiving device.
+
+---
+
+## 🔁 TCP/IP and the Three-Way Handshake
+
+### 🌐 TCP (Transmission Control Protocol)
+- A connection-based protocol that ensures data delivery via a **three-way handshake**.
+- TCP is structured into 4 layers:
+  1. Application  
+  2. Transport  
+  3. Internet  
+  4. Network Interface  
+- TCP adds headers at each layer (encapsulation). Removing them is **decapsulation**.
+
+### ✅ Advantages of TCP
+- Guarantees data integrity.
+- Prevents packet flooding by synchronizing transmission.
+- Reliable, ordered, and error-checked delivery.
+
+### ⚠️ Disadvantages of TCP
+- Requires stable connection between devices.
+- Slower than UDP due to overhead.
+- If part of a message is lost, it must be resent.
+
+---
+
+### 📦 TCP Packet Headers
+- **Source Port**: Random port opened by sender (0–65535).
+- **Destination Port**: Port of receiving service (e.g., 80 for HTTP).
+- **Source IP / Destination IP**: IP addresses of sender and receiver.
+- **Sequence Number**: Random number marking first byte of data.
+- **Acknowledgement Number**: Confirms received packets by incrementing sequence.
+- **Checksum**: Confirms data hasn't been altered.
+- **Data**: Actual file content being sent.
+- **Flags**: Indicate how packets are handled during transmission.
+
+---
+
+### 🤝 Three-Way Handshake Steps
+1. **SYN** (Client → Server): Initiates connection.
+2. **SYN/ACK** (Server → Client): Acknowledges and synchronizes.
+3. **ACK** (Client → Server): Final confirmation, connection established.
+4. **DATA**: Transmission begins.
+5. **FIN**: Gracefully ends the connection.
+6. **RST**: Abrupt termination due to error or fault.
+
+**Example Sequence:**
+- Client ISN: 0  
+- Server ISN: 5000  
+- Client ACK: 5001  
+- Client sends data starting at sequence 1 (0+1)
+
+---
+
+## 🔚 TCP Connection Termination
+- TCP ends a connection when both parties have sent and acknowledged all data.
+- Initiated with a **FIN** packet; acknowledged by the receiving device.
+- Closes to free up system resources.
+
+---
+
+## 🚀 UDP/IP (User Datagram Protocol)
+
+### ⚡ UDP Overview
+- Stateless and connectionless.
+- No three-way handshake; data is sent without checking delivery.
+- Used where **speed** is prioritized over **reliability** (e.g., video streaming, voice chat).
+
+### ✅ Advantages of UDP
+- Faster than T
+
 
