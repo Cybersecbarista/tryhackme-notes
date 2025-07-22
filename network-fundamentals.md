@@ -239,6 +239,46 @@ At every layer data travels through, specific processes take place, and new head
 - Used where **speed** is prioritized over **reliability** (e.g., video streaming, voice chat).
 
 ### ✅ Advantages of UDP
-- Faster than T
+- Faster than TCP.
+- No need to maintain a connection.
+- Less overhead.
+
+### ⚠️ Disadvantages of UDP
+- No delivery confirmation.
+- No ordering or integrity checks.
+- Poor performance over unstable networks.
+
+---
+
+### 📦 UDP Packet Headers
+- **Time to Live (TTL)**: Expiry limit.
+- **Source/Destination Address**: IPs of sender/receiver.
+- **Source Port**: Random open port of sender.
+- **Destination Port**: Defined port of the service (e.g., 80).
+- **Data**: Content being transmitted.
+
+---
+
+## ⚓ Ports 101
+
+### 🛳️ What Are Ports?
+- Numerical identifiers (0–65535) used to manage connections and services.
+- Ports are like docking bays; specific services only accept traffic on specific ports.
+- **Standard Ports (0–1024)** are predefined for common services.
+
+### 🔑 Common Protocols & Ports
+| Protocol | Port | Description |
+|---------|------|-------------|
+| FTP     | 21   | File Transfer Protocol |
+| SSH     | 22   | Secure remote login (text-based) |
+| HTTP    | 80   | Web browser access (unencrypted) |
+| SMB     | 445  | File and printer sharing |
+| HTTPS   | 443  | Encrypted web access |
+| RDP     | 3389 | Remote Desktop Protocol |
+
+> 💡 You can use a different port by specifying it after a colon:  
+> Example: `http://example.com:8080`
+
+---
 
 
