@@ -279,6 +279,106 @@ At every layer data travels through, specific processes take place, and new head
 > 💡 You can use a different port by specifying it after a colon:  
 > Example: `http://example.com:8080`
 
+## Extending Your Network
+
+### Port Forwarding
+- Connects applications and services to the internet.
+- Opens specific ports on a network.
+- Configured at the **router** level.
+
+---
+
+### Firewall
+- A device (hardware or software) that controls what traffic is allowed to **enter** or **exit** the network.
+- Functions like **border security** for the network.
+- Firewall rules can be configured based on:
+  - Where the traffic is going
+  - Which port it's using
+  - What protocol it's using
+
+- Firewalls inspect **packets** to make decisions.
+- Can be implemented via hardware or software.
+- Categories range from 2 to 5 types.
+
+#### Firewall Categories
+
+**Stateful Firewall**
+- Determines behavior based on the **entire connection**, not just individual packets.
+- Uses more resources.
+- Can block an entire device if a bad connection is detected.
+
+**Stateless Firewall**
+- Uses **static rules** to allow or deny individual packets.
+- More lightweight than stateful firewalls.
+- Not as adaptive—only as effective as the rules in place.
+- Useful against high-volume traffic from known sources (e.g., **DDoS attacks**).
+
+---
+
+### Virtual Private Network (VPN)
+- Allows devices on separate networks to communicate securely by creating a **dedicated tunnel** over the internet.
+- Creates a **private network** across public infrastructure.
+
+#### Benefits of VPNs
+- Connects networks across different geographic locations.
+- Provides **privacy** and **anonymity**.
+
+#### VPN Technologies
+
+**PPP (Point-to-Point Protocol)**
+- Uses **PPTP** for authentication and data encryption.
+
+**PPTP (Point-to-Point Tunneling Protocol)**
+- Allows PPP data to travel outside a local network.
+- Easy to set up and widely supported.
+- Weak encryption compared to modern alternatives.
+
+**IPSec (Internet Protocol Security)**
+- Encrypts data using the IP framework.
+- Strong encryption and widely supported.
+- More difficult to configure.
+
+---
+
+## LAN Networking Devices
+
+### Router
+- Connects multiple networks using **routing protocols**.
+- Operates at **Layer 3 (Network Layer)** of the OSI model.
+- Typically includes an interactive admin interface.
+- Used for setting up:
+  - Port forwarding
+  - Firewall rules
+
+- Determines best path based on:
+  - Shortest distance
+  - Reliability
+  - Speed of transmission medium
+
+---
+
+### Switch
+- Dedicated device that connects multiple devices within a local network.
+- Operates at **Layer 2 or Layer 3** of the OSI model.
+
+**Layer 2 Switch**
+- Works only at the Data Link Layer.
+- Uses **MAC addresses** to forward **frames**.
+
+**Layer 3 Switch**
+- Combines functionality of a switch and a router.
+- Routes **packets** using **IP addresses**.
+- Also switches **frames** like a Layer 2 switch.
+
+---
+
+### VLAN (Virtual Local Area Network)
+- Allows for virtual segmentation of devices within a network.
+- All devices can still access the internet.
+- Enhances **security and control** by applying rules on:
+  - Which devices can communicate with each other
+  - Examples: isolating departments within a business
+
 ---
 
 
