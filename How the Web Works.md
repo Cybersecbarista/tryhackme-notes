@@ -86,3 +86,135 @@ DNS isn't just for websites — it supports multiple record types used for diffe
 
 DNS is a core internet protocol that maps human-readable names to machine-usable IP addresses. Understanding how it works — from domain structure to record types and DNS resolution — is essential for networking and cybersecurity.
 
+# HTTP in Detail
+
+## What is HTTP? (HyperText Transfer Protocol)
+
+HTTP is the protocol used whenever you view a website. It was developed by Tim Berners-Lee and his team between 1989–1991. HTTP defines the rules for communicating with web servers to transmit webpage data such as HTML, images, and videos.
+
+---
+
+## What is HTTPS? (HyperText Transfer Protocol Secure)
+
+HTTPS is the secure version of HTTP. It:
+- Encrypts data in transit
+- Prevents data from being intercepted
+- Verifies that the server is legitimate (not an impersonator)
+
+---
+
+## Requests and Responses
+
+When we access a website, the browser makes **HTTP requests** to the web server for content like HTML, images, videos, etc. The server then returns **HTTP responses**.
+
+---
+
+## What is a URL? (Uniform Resource Locator)
+
+A URL is an instruction for accessing a resource on the internet.
+
+### URL Components:
+- **Scheme**: Protocol to use (e.g. `http`, `https`, `ftp`)
+- **User**: Optional credentials (username/password)
+- **Host**: Domain name or IP address of the server
+- **Port**: Port number (default is 80 for HTTP, 443 for HTTPS)
+- **Path**: File or directory to access
+- **Query String**: Additional data (`?id=1`)
+- **Fragment**: In-page reference (`#section1`)
+
+---
+
+## Making a Request
+
+Basic HTTP request example:
+
+
+- Line 1: GET method, root path `/`, HTTP version
+- Line 2: Target host
+- Line 3: Browser details
+- Line 4: Referrer page
+- Line 5 (not shown): Blank line to mark end of request
+
+---
+
+## HTTP Methods
+
+HTTP methods indicate the action the client wants to perform.
+
+| Method | Description |
+|--------|-------------|
+| `GET` | Retrieve data from a server |
+| `POST` | Send data to create a new record |
+| `PUT` | Send data to update an existing record |
+| `DELETE` | Remove a record or resource |
+
+---
+
+## HTTP Status Codes
+
+Status codes inform the client of the result of the request.
+
+### Status Code Categories:
+- **100–199**: Informational (rarely used)
+- **200–299**: Success
+- **300–399**: Redirection
+- **400–499**: Client error
+- **500–599**: Server error
+
+### Common Status Codes:
+| Code | Meaning |
+|------|---------|
+| `200 OK` | Request successful |
+| `201 Created` | New resource created |
+| `301 Moved Permanently` | Resource has moved permanently |
+| `302 Found` | Resource temporarily at a different location |
+| `400 Bad Request` | Malformed request |
+| `401 Unauthorized` | Login required |
+| `403 Forbidden` | Access denied |
+| `404 Not Found` | Resource not found |
+| `405 Method Not Allowed` | Invalid HTTP method used |
+| `500 Internal Server Error` | General server failure |
+| `503 Service Unavailable` | Server overloaded or under maintenance |
+
+---
+
+## HTTP Headers
+
+Headers provide additional information in requests and responses.
+
+### 🔹 Common Request Headers
+| Header | Description |
+|--------|-------------|
+| `Host` | Specifies target domain |
+| `User-Agent` | Identifies browser and version |
+| `Content-Length` | Size of data being sent (e.g., form submissions) |
+| `Accept-Encoding` | Supported compression types (e.g., gzip) |
+| `Cookie` | Sends stored cookies to the server |
+
+---
+
+### 🔸 Common Response Headers
+| Header | Description |
+|--------|-------------|
+| `Set-Cookie` | Sends cookies to be stored by the client |
+| `Cache-Control` | Caching instructions |
+| `Content-Type` | Type of data returned (HTML, CSS, JSON, etc.) |
+| `Content-Encoding` | Compression method used on response data |
+
+---
+
+## Cookies
+
+Cookies are small pieces of data stored by the browser.
+
+- Sent by the server using the `Set-Cookie` header
+- Returned by the client in future requests via the `Cookie` header
+- Used to maintain **session state**, remember preferences, or track behavior
+
+### Key Points:
+- HTTP is stateless; cookies help track sessions
+- Cookies often store **tokens** (not plaintext passwords)
+- Used heavily for authentication and personalization
+
+---
+
