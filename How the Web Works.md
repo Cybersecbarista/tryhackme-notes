@@ -217,4 +217,80 @@ Cookies are small pieces of data stored by the browser.
 - Used heavily for authentication and personalization
 
 ---
+# 🌐 How the Web Works
+
+When you visit a website, your browser (like Safari or Google Chrome) makes a request to a web server asking for information about the page you're visiting. The server responds with data that your browser uses to display the page. A web server is simply a dedicated computer located elsewhere in the world that handles these requests.
+
+There are two major components that make up a website:
+
+- **Front End (Client-Side):** The way your browser renders a website.
+- **Back End (Server-Side):** A server that processes your request and returns a response.
+
+There are many processes involved in how your browser makes a request to a web server, but the core concept is: the browser makes a request, and the server responds with data your browser uses to render content.
+
+---
+
+## 🧱 HTML
+
+Websites are primarily created using the following core technologies:
+
+- **HTML** – Builds and defines the structure of a website.
+- **CSS** – Styles the website to make it visually appealing.
+- **JavaScript** – Adds interactivity and dynamic features.
+
+HTML (HyperText Markup Language) is the standard language for creating web pages. HTML is composed of elements, also called tags, which define the content and structure. Tags can contain attributes that provide additional context or control appearance/behavior.
+
+Some common attributes include `class`, used to apply CSS styles; `src`, used to define the source for media like images or scripts; and `id`, a unique identifier for a given element.
+
+An element can have multiple attributes, and while classes can be shared across elements, each `id` must be unique within a page. IDs are often used for JavaScript interaction and specific styling.
+
+You can inspect or view the HTML of any website by right-clicking the page and selecting “View Page Source” in Chrome or “Show Page Source” in Safari.
+
+---
+
+## ⚙️ JavaScript
+
+JavaScript (JS) is one of the most widely used programming languages in web development. It enables interactivity and dynamic content on otherwise static HTML pages.
+
+HTML defines the structure of a page, while JavaScript controls functionality. Without JavaScript, a web page is static and unresponsive to user input. With JavaScript, developers can dynamically update content, change styles in real-time, handle events like clicks or mouse movements, create animations, and perform client-side validation.
+
+JavaScript can be embedded directly in a web page using script tags or linked externally using a `src` attribute. HTML elements can also include event listeners like `onclick` or `onhover`, which trigger JavaScript actions when events occur.
+
+---
+
+## 🔐 Sensitive Data Exposure
+
+Sensitive Data Exposure happens when a website fails to protect or remove sensitive information, and that data becomes visible in the frontend source code. Since much of a website’s content is rendered on the client side using HTML, careless developers may accidentally leave behind sensitive data such as login credentials, hidden admin or debug links, API keys, or tokens.
+
+This information can be viewed by anyone using “View Page Source” or browser developer tools. Attackers can potentially leverage exposed data to escalate privileges or access protected areas of the application.
+
+As part of any web security assessment, it’s important to review source code for exposed secrets, hidden paths, or misconfigurations.
+
+---
+
+## 💉 HTML Injection
+
+HTML Injection is a client-side vulnerability that occurs when unsanitized user input is rendered directly into a web page’s HTML. This can allow an attacker to inject malicious HTML or JavaScript, which may alter the appearance or behavior of a page.
+
+If a web application takes user input and reflects it without proper filtering, attackers can modify what the page displays and potentially even execute scripts if JavaScript is allowed.
+
+User input is often reused in frontend and backend functions. If that input is inserted into the page without proper validation or escaping, HTML injection occurs.
+
+To prevent this vulnerability, developers should never trust user input. It must be sanitized and validated on both frontend and backend before being used. Dangerous characters or tags should be stripped, encoded, or filtered out, and proper input handling should be enforced across all components.
+
+---
+
+## ✅ Summary
+
+- Websites operate on a request-response model between the browser and web server.
+- HTML builds the structure, CSS styles it, and JavaScript makes it interactive.
+- JavaScript can update content, react to events, and dynamically control page behavior.
+- Sensitive Data Exposure occurs when private data is visible in public frontend code.
+- HTML Injection exploits unsanitized input to alter page content or behavior.
+- Input should always be treated as untrusted and must be sanitized and validated properly.
+
+---
+
+
+
 
