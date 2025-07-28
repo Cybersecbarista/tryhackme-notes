@@ -290,6 +290,172 @@ To prevent this vulnerability, developers should never trust user input. It must
 - Input should always be treated as untrusted and must be sanitized and validated properly.
 
 ---
+# 🌐 Putting It All Together & How the Web Works
+
+## 🧠 Summary of the Web Workflow
+
+When you request a webpage in your browser:
+
+1. Your computer needs the **IP address** of the server → uses **DNS**.
+2. It communicates using **HTTP** or **HTTPS** protocols.
+3. The server responds with:
+   - HTML
+   - CSS
+   - JavaScript
+   - Images, etc.
+4. Your **browser renders** the data to display the website.
+
+---
+
+## ⚖️ Load Balancers
+
+Used when:
+- Websites have **high traffic**.
+- Applications require **high availability**.
+
+### Key Functions:
+- Distributes traffic across **multiple servers**.
+- Provides **failover** if one server becomes unresponsive.
+
+### Algorithms:
+- **Round-Robin**: Rotates through servers.
+- **Weighted**: Sends traffic to the least busy server.
+
+### Health Checks:
+- Regularly checks if servers are healthy.
+- Stops sending traffic to a server that fails health checks.
+
+---
+
+## 🌍 CDN (Content Delivery Network)
+
+- Hosts **static files** (JavaScript, CSS, images, videos) on globally distributed servers.
+- Sends user requests to the **closest geographical server**.
+- Reduces **latency**, **server load**, and increases **site speed**.
+
+---
+
+## 🗃️ Databases
+
+Websites use databases to **store and retrieve** user and app data.
+
+### Common Types:
+- **MySQL**
+- **MSSQL**
+- **MongoDB**
+- **PostgreSQL**
+
+Databases can range from:
+- Simple plain text files
+- To complex, multi-server clusters
+
+---
+
+## 🔥 WAF (Web Application Firewall)
+
+A **WAF** sits between the client and the server.
+
+### Main Functions:
+- Protects against **hacking attempts**, **DoS attacks**, and **malicious bots**.
+- Filters incoming traffic using:
+  - **Pattern matching**
+  - **Browser verification**
+  - **Rate limiting** (blocks excessive requests per IP)
+
+If a request is deemed dangerous, it's dropped before it reaches the server.
+
+---
+
+## 🖥️ What Is a Web Server?
+
+A **web server** is software that:
+- Listens for incoming HTTP(S) connections
+- Delivers requested content (HTML, files, images) to users
+
+### Common Web Server Software:
+- **Apache**
+- **Nginx**
+- **IIS** (Windows)
+- **NodeJS**
+
+### Default Root Directories:
+- **Linux (Apache/Nginx):** `/var/www/html`
+- **Windows (IIS):** `C:\inetpub\wwwroot`
+
+
+---
+
+## 🌐 Virtual Hosts
+
+A single web server can **host multiple websites** using different domain names.
+
+### How It Works:
+- The server inspects the **hostname** in the HTTP headers.
+- Matches it to a **virtual host config**.
+- Serves the corresponding site.
+
+### Example Configs:
+- `one.com` → `/var/www/website_one`
+- `two.com` → `/var/www/website_two`
+
+If no match is found → the **default site** is served.
+
+> ✅ There's no limit to how many virtual hosts you can configure.
+
+---
+
+## 🧱 Static vs Dynamic Content
+
+### 🔒 Static Content
+- **Unchanging** content directly served from the server.
+- Examples:
+  - Images
+  - CSS
+  - JavaScript
+  - HTML files that don’t change
+
+Served **as-is** without any processing.
+
+---
+
+### 🔄 Dynamic Content
+- Changes based on:
+  - **User input**
+  - **Database entries**
+  - **App logic**
+
+#### Examples:
+- Blog showing latest posts
+- Search results
+- User dashboards
+
+Content is generated in the **backend**, then rendered and delivered to the **frontend** (the user’s browser).
+
+---
+
+## 🧠 Backend & Scripting Languages
+
+Backend languages **power the server-side logic** that handles requests, processes data, and builds custom responses.
+
+### Common Backend Languages:
+- **PHP**
+- **Python**
+- **Ruby**
+- **NodeJS**
+- **Perl**
+
+### What Backend Code Can Do:
+- Connect to and query **databases**
+- Handle **user input**
+- Call **external APIs**
+- Generate **dynamic HTML**
+- Validate data and enforce business rules
+
+> ⚙️ While the backend logic is hidden, the result is visible in the form of structured, dynamic content shown on the **frontend**.
+
+---
+
+
 
 
 
