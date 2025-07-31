@@ -80,6 +80,131 @@ Examples:
 - `echo "world" >> file.txt` – Appends `world` to the end of `file.txt`
 
 ---
+# Linux Fundamentals Part 2
+
+## SSH (Secure Shell)
+- SSH is a protocol that enables secure, encrypted communication between devices.
+- It allows you to remotely execute commands on another device.
+- All transmitted data is encrypted over the network.
+
+### Using SSH to Login to a Linux Machine
+To connect to a remote machine, you need:
+1. The IP address of the remote machine
+2. Valid credentials to log into an account on that machine
+
+**Command Syntax:**
+```bash
+ssh username@ip_address
+```
+**Example:**
+```bash
+ssh tryhackme@10.10.25.210
+```
+
+---
+
+## Flags and Switches
+- Most commands accept **arguments** called **flags** or **switches**, identified by a hyphen (`-`).
+- These modify or extend the behavior of commands.
+
+**Examples:**
+- `-a`: Shows all files and folders (including hidden ones).
+- `--help`: Lists all possible options for the command with descriptions.
+
+---
+
+## The Man (Manual) Page
+- Provides documentation for system commands and applications.
+- Can be accessed directly from the terminal.
+
+**Example:**
+```bash
+man ls
+```
+(Displays the manual for the `ls` command)
+
+---
+
+## Filesystem Interaction (Continued)
+
+### `touch`
+- Creates a blank file.
+```bash
+touch note
+```
+> Use `echo` or a text editor like `nano` to add content.
+
+### `mkdir`
+- Makes a directory (folder).
+```bash
+mkdir mydirectory
+```
+
+### `rm`
+- Removes a file or directory.
+- Use `-R` to recursively remove directories.
+```bash
+rm -R mydirectory
+```
+
+### `cp`
+- Copies a file or folder.
+```bash
+cp original.txt copy.txt
+```
+> Copies content of `original.txt` into `copy.txt`
+
+### `mv`
+- Moves or renames a file or folder.
+```bash
+mv note2 note3
+```
+> `note3` will now have the contents of `note2`
+
+### `file`
+- Determines the type of a file.
+```bash
+file myfile
+```
+
+---
+
+## Permissions 101
+- The first three columns in a directory listing show file permissions.
+- Permissions are defined by **Read**, **Write**, and **Execute**.
+
+### Ownership
+- A file can be owned by a user and/or a group.
+- Permissions can be different for the owner, the group, and others.
+
+> Real-world example: A web server user needs access to its own files but shouldn't compromise other users' files on a shared server.
+
+---
+
+## Switching Between Users
+- Use the `su` (substitute user) command.
+
+### Requirements:
+1. Username to switch to
+2. That user's password (unless you're root)
+
+**Example:**
+```bash
+su -l user2
+```
+> `-l` starts a shell that mimics logging in directly as that user, including dropping into their home directory.
+
+---
+
+## Common Directories
+- `/etc`: System configuration files. Critical root directory.
+- `/var`: Variable data like logs and temporary files created by applications.
+- `/root`: Home directory for the root (admin) user.
+- `/tmp`: Temporary data that doesn't need to persist.
+
+---
+
+✅ *End of Linux Fundamentals Part 2 Notes*
 
 📌 *This room introduced the fundamentals of navigating and interacting with Linux through the terminal. These basics are essential for any cybersecurity or IT professional working in Linux environments.*
 
