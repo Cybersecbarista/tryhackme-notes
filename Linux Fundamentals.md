@@ -206,5 +206,74 @@ su -l user2
 
 ✅ *End of Linux Fundamentals Part 2 Notes*
 
+# Linux Fundamentals Part 3
+
+## Terminal Text Editors
+**Nano**
+- Launch with `nano filename`
+- Use arrow keys to navigate, Enter to start a new line
+- Common shortcuts: `Ctrl + X` (Exit), `Ctrl + W` (Search)
+
+**VIM**
+- Advanced text editor, customizable
+- Syntax highlighting for code
+- Works on all terminals
+
+## Downloading Files
+**wget**: download files over HTTP
+- Example: `wget https://example.com/myfile.txt`
+
+## Transferring Files - SCP (SSH)
+**SCP**: Securely copy files between systems using SSH
+- To remote: `scp important.txt user@ip:/path/destination.txt`
+- From remote: `scp user@ip:/path/file.txt notes.txt`
+
+## Serving Files - Python Web Server
+**Python HTTPServer**
+- Start with: `python3 -m http.server`
+- Serves files in current directory
+- Requires full file name to download
+
+## Viewing & Managing Processes
+- `ps`: View current user's processes
+- `ps aux`: View all processes
+- `top`: Real-time system process stats
+- `kill <PID>`: Terminate process
+- `kill -9 <PID>`: Force kill
+- `SIGTERM`, `SIGKILL`, `SIGSTOP`: Common signals
+
+## Process Lifecycle
+- `systemd` is the first PID 1 process on boot
+- All services and processes are child processes
+- Namespaces split CPU/RAM between processes
+
+## Starting Services on Boot
+- Use `systemctl` to manage services
+- Commands: `start`, `stop`, `enable`, `disable`
+- Example: `systemctl start apache2`
+
+## Foreground vs Background Processes
+- `&` runs command in background
+- `Ctrl + Z` pauses (suspends) current process
+- `fg` resumes background process to foreground
+
+## Cron Jobs (Scheduled Tasks)
+- Edit with: `crontab -e`
+- Format: `MIN HOUR DOM MON DOW CMD`
+- Example: `0 */12 * * * cp -R /source /dest/`
+- Use sites like Crontab Generator or Cron Guru for help
+
+## Package Managers & Repositories
+- Use `apt` to install, update, remove packages
+- Add repo: `add-apt-repository ppa:xyz/ppa`
+- Remove: `add-apt-repository --remove ppa:xyz/ppa`
+- GPG keys verify package integrity
+
+## Logs & Monitoring
+- Logs stored in `/var/log`
+- `access.log`, `error.log`: server logs
+- Used for diagnostics, intrusion detection, system health
+
+
 📌 *This room introduced the fundamentals of navigating and interacting with Linux through the terminal. These basics are essential for any cybersecurity or IT professional working in Linux environments.*
 
