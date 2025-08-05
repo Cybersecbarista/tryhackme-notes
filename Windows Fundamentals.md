@@ -295,3 +295,147 @@ Includes:
 
 **Editor Tool:** `regedit`
 
+
+# Windows Fundamentals 3
+
+## 🛠️ Windows Update
+Windows Update is a service provided by Microsoft to provide security updates, feature enhancements, and patches for the Windows operating system and other Microsoft products, such as Microsoft Defender.
+
+Updates are typically released on the **2nd Tuesday of each month**, known as **Patch Tuesday**. Urgent updates may be released earlier if needed.
+
+Windows Update is located in **Settings**, or accessible via the **Run dialog** (`Win + R`) using:
+
+```
+control /name Microsoft.WindowsUpdate
+```
+
+> Users have historically postponed updates due to reboot requirements, but with Windows 10 and later, updates can only be delayed—not avoided. Eventually, your system will update and reboot.
+
+## 🔐 Windows Security Overview
+> *"Windows Security is your home to manage the tools that protect your device and your data."* – Microsoft
+
+Accessible via **Settings**, Windows Security has the following **Protection areas**:
+- Virus & threat protection
+- Firewall & network protection
+- App & browser control
+- Device security
+
+### Status Icons:
+- 🟢 Green: Protected
+- 🟡 Yellow: Recommendation needed
+- 🔴 Red: Immediate action needed
+
+---
+
+## 🦠 Virus & Threat Protection
+
+### 🔍 Current Threats
+**Scan Options:**
+- **Quick scan** – Common threat areas
+- **Full scan** – Entire disk
+- **Custom scan** – User-defined
+
+**Threat History:**
+- **Last scan**
+- **Quarantined threats**
+- **Allowed threats** (⚠️ Only allow if you're 100% sure)
+
+### ⚙️ Protection Settings
+Manage settings like:
+- **Real-time protection**
+- **Cloud-delivered protection**
+- **Automatic sample submission**
+- **Controlled folder access**
+- **Exclusions** (⚠️ Be cautious)
+- **Notifications**
+
+### 🔄 Updates & Ransomware Protection
+- **Check for updates** – manually fetch Defender definitions
+- **Controlled folder access** is required for ransomware protection
+
+> 📝 In lab VMs, real-time protection may be turned off for performance. Always enable it on personal devices.
+
+### 🖱️ Tip:
+Right-click any file/folder and select **"Scan with Microsoft Defender"** to run an on-demand scan.
+
+---
+
+## 🔥 Firewall and Network Protection
+
+**What is a firewall?**
+> A firewall controls what traffic is allowed in/out of your device via ports—think of it like a security guard.
+
+### 🔐 Network Profiles:
+- **Domain** – Connected to domain controller
+- **Private** – Trusted (e.g., home)
+- **Public** – Open (e.g., café Wi-Fi)
+
+Each profile allows:
+- Turning firewall on/off
+- Blocking all incoming connections
+
+Use the command below to open Defender Firewall:
+```
+wf.msc
+```
+
+---
+
+## 🌐 App & Browser Control
+
+Configure **Microsoft Defender SmartScreen** to protect against phishing and malware.
+
+### Features:
+- **Check apps and files** – Protects against unknown files
+- **Exploit protection** – Built into Windows 10+
+
+---
+
+## 💻 Device Security
+
+Mostly left unchanged by users, but includes:
+
+### Core Isolation
+- **Memory Integrity** – Blocks malicious code from secure areas
+
+### Security Processor (TPM)
+TPM = Trusted Platform Module
+
+> *"A TPM chip is a secure crypto-processor for cryptographic operations, with physical security mechanisms to resist tampering."* – Microsoft
+
+---
+
+## 🔐 BitLocker
+
+> *"BitLocker Drive Encryption protects data from theft or exposure on lost or decommissioned computers."* – Microsoft
+
+- Best used with **TPM version 1.2+**
+- TPM + BitLocker = strongest data protection
+
+---
+
+## 💾 Volume Shadow Copy Service (VSS)
+
+> *"VSS creates point-in-time copies (snapshots) for backups."*
+
+- Stored in `System Volume Information` on each drive
+- If enabled, allows:
+  - Create restore point
+  - Perform system restore
+  - Configure/delete restore points
+
+⚠️ Malware often targets and deletes shadow copies to **prevent recovery**. Always maintain **offline/off-site backups**.
+
+---
+
+## 🕵️ Living Off The Land (LOTL)
+
+Attackers use **built-in Windows tools** (like PowerShell, wmic, etc.) to stay hidden.
+
+This method is called **Living Off The Land**, and is a common post-exploitation tactic.
+
+---
+
+**End of Windows Fundamentals 3**
+
+
