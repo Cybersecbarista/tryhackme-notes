@@ -116,6 +116,130 @@ Social media is useful for:
 
 Follow cyber-focused channels and news outlets to stay updated.
 
+
+# 🧠 Active Directory Basics
+
+## 🏢 Introduction to Active Directory
+Microsoft's Active Directory is the backbone of the corporate world. It simplifies the management of devices and users within a corporate environment.
+
+### 🌐 Windows Domains
+A Windows domain is a group of users and computers under centralized administration. The Domain Controller (DC) is the server that runs Active Directory services.
+
+### ✅ Benefits
+- Centralized identity management
+- Manageable security policies
+
+## 🧪 Real-World Example
+In schools or offices, user credentials are validated across machines by the domain controller, which applies policies and restrictions centrally.
+
+## 🧩 Active Directory Domain Services (AD DS)
+Acts as a catalog for all network "objects":
+- Users
+- Machines
+- Security groups
+- Printers, etc.
+
+### 👤 Users
+- Represent people or services
+- Can be authenticated and granted permissions
+- Services like IIS/MSSQL use service accounts
+
+### 💻 Machines
+- Join the domain as objects (security principals)
+- Named like `DC01$`
+- Passwords rotated and long
+
+### 🛡️ Security Groups
+- Assign permissions to users/machines
+- Nested groups allowed
+- Common Groups:
+  - Domain Admins
+  - Server Operators
+  - Backup Operators
+  - Account Operators
+  - Domain Users, Computers, Controllers
+
+## 🗂️ Active Directory Users and Computers (ADUC)
+Tool used to manage users/groups/machines in OUs:
+- OUs mimic business structure
+- Each user can belong to only one OU
+- Containers:
+  - Builtin
+  - Computers
+  - Domain Controllers
+  - Users
+  - Managed Service Accounts
+
+## 📌 OUs vs Security Groups
+| Organizational Units (OUs) | Security Groups |
+|----------------------------|------------------|
+| Used for policy application | Used for permission management |
+| Only one OU per user        | Users can be in multiple groups |
+
+## 🧑‍💻 Managing Users in AD
+
+### 🔁 Delegation
+Delegation allows giving specific privileges to users (like Helpdesk) to manage OUs without being Domain Admins.
+
+## 🖥️ Managing Computers in AD
+Default location: "Computers" container  
+Best practice: Separate by function:
+- Workstations (daily use, no elevated access)
+- Servers (host services)
+- Domain Controllers (most sensitive)
+
+## ⚙️ Group Policies
+GPOs let you apply settings to users/computers in an OU.
+
+### 🛠️ Creating GPOs
+1. Use Group Policy Management Tool
+2. Create GPO under "Group Policy Objects"
+3. Link GPO to target OU
+
+### 🧰 Settings and Security Filtering
+- GPOs apply to linked OU and sub-OUs
+- Can restrict with Security Filtering (e.g., apply only to a group)
+
+### 🔁 Distribution via SYSVOL
+GPOs are distributed via:
+```
+\<domain>\SYSVOL
+```
+
+### 🕐 GPO Sync
+- Syncs every 90–120 minutes
+- Force sync with:
+```bash
+gpupdate /force
+```
+
+## 🔐 Authentication Methods
+
+### Kerberos (Default)
+- Uses tickets (TGT, TGS)
+- Key Distribution Center (KDC) runs on Domain Controller
+- Secure and efficient
+
+### NetNTLM (Legacy)
+- Challenge-response method
+- Still used for compatibility
+- Password hash never transmitted
+
+## 🌳 Trees, Forests, Trusts
+
+### Trees
+- Domains in the same namespace
+- Example: `uk.thm.local`, `us.thm.local` under `thm.local`
+
+### Forests
+- Domains with different namespaces
+- Example: `thm.local` and `mht.local`
+
+### Trust Relationships
+- Allow cross-domain access
+- One-way or two-way
+- Trust ≠ access; permissions still need to be granted
+
 ---
 
 ## Conclusion
