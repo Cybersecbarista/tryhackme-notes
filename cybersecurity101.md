@@ -245,3 +245,175 @@ gpupdate /force
 ## Conclusion
 
 As the information landscape evolves, staying plugged into the right channels and resources helps you stay sharp and ahead of the curve.
+
+# Windows Command Line Notes
+
+> Everyone prefers a graphical user interface (GUI) until they master a command-line interface (CLI). There are many reasons for that.
+
+GUIs are usually intuitive—you can explore and figure them out quickly. CLIs often have a learning curve, but once mastered, they can be faster and more efficient.
+
+Example: Checking your IP address  
+- GUI: Multiple clicks through menus.  
+- CLI: Type one command, no mouse needed.
+
+## Advantages of CLI
+- **Lower resource usage**: Runs on older hardware or limited memory systems. Saves resources in cloud computing.
+- **Automation**: Easy to script tasks with batch files.
+- **Remote management**: Use SSH for servers, routers, IoT devices, even on slow networks.
+
+---
+
+## Basic System Information
+
+**Commands:**
+
+```cmd
+set
+```
+Displays environment variables including the system `Path`.
+
+```cmd
+ver
+```
+Shows the Windows OS version.
+
+```cmd
+systeminfo
+```
+Displays detailed system information (OS, processor, memory, etc.).  
+Use `| more` to view page-by-page.
+
+```cmd
+driverquery
+driverquery | more
+```
+Lists drivers (page-by-page with `| more`).
+
+```cmd
+help
+```
+Help information for a command.
+
+```cmd
+cls
+```
+Clears the Command Prompt screen.
+
+---
+
+## Network Troubleshooting
+
+**Network Configuration:**
+
+```cmd
+ipconfig
+ipconfig /all
+```
+View basic or detailed network configuration.
+
+**Connectivity Tests:**
+
+```cmd
+ping target_name
+```
+Check if a target is reachable.
+
+```cmd
+tracert target_name
+```
+Trace route to target.
+
+**DNS Lookup:**
+
+```cmd
+nslookup example.com
+nslookup example.com 1.1.1.1
+```
+Look up domain info (optional specific DNS server).
+
+**Network Statistics:**
+
+```cmd
+netstat
+netstat -abon
+```
+- `-a`: all connections/listening ports  
+- `-b`: program using the port  
+- `-o`: process ID  
+- `-n`: numeric format
+
+---
+
+## File and Disk Management
+
+**Directories:**
+
+```cmd
+cd
+```
+Show current directory.
+
+```cmd
+dir
+dir /a
+dir /s
+```
+List directory contents (`/a` for hidden, `/s` for subdirectories).
+
+```cmd
+tree
+```
+Graph view of directories.
+
+```cmd
+cd target_directory
+cd ..
+```
+Navigate into or up directories.
+
+```cmd
+mkdir directory_name
+rmdir directory_name
+```
+Create or remove directories.
+
+**Files:**
+
+```cmd
+type file.txt
+more file.txt
+```
+View text files (`more` for paging).
+
+```cmd
+copy source destination
+move source destination
+```
+Copy or move files.
+
+```cmd
+del file.txt
+erase file.txt
+```
+Delete files (`*` wildcard for multiple).
+
+---
+
+## Tasks and Process Management
+
+```cmd
+tasklist
+```
+List running processes.
+
+```cmd
+tasklist /FI "imagename eq sshd.exe"
+```
+Filter processes by name.
+
+```cmd
+taskkill /PID 4567
+```
+Kill process by PID.
+
+---
