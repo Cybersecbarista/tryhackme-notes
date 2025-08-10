@@ -417,3 +417,89 @@ taskkill /PID 4567
 Kill process by PID.
 
 ---
+# Windows PowerShell
+
+## What is PowerShell?
+From the official Microsoft page: “PowerShell is a cross-platform task automation solution made up of a command-line shell, a scripting language, and a configuration management framework.”
+
+PowerShell is a powerful tool from Microsoft designed for task automation and configuration management. It combines a command-line interface and a scripting language built on the .NET framework. Unlike older text-based command-line tools, PowerShell is object-oriented, which means it can handle complex data types and interact with system components more effectively. Initially exclusive to Windows, PowerShell has lately expanded to support macOS and Linux, making it a versatile option for IT professionals across different operating systems.
+
+## A Brief History of PowerShell
+PowerShell was developed to overcome the limitations of existing command-line tools and scripting environments in Windows. In the early 2000s, as Windows was increasingly used in complex enterprise environments, traditional tools like cmd.exe and batch files fell short in automating and managing these systems. Microsoft needed a tool that could handle more sophisticated administrative tasks and interact with Windows’ modern APIs.
+
+Jeffrey Snover, a Microsoft engineer, realised that Windows and Unix handled system operations differently—Windows used structured data and APIs, while Unix treated everything as text files. This difference made porting Unix tools to Windows impractical. Snover’s solution was to develop an object-oriented approach, combining scripting simplicity with the power of the .NET framework. Released in 2006, PowerShell allowed administrators to automate tasks more effectively by manipulating objects, offering deeper integration with Windows systems.
+
+As IT environments evolved to include various operating systems, the need for a versatile automation tool grew. In 2016, Microsoft responded by releasing PowerShell Core, an open-source and cross-platform version that runs on Windows, macOS, and Linux.
+
+## The Power in PowerShell
+To fully grasp the power of PowerShell, we first need to understand what an object is in this context.
+
+In programming, an object represents an item with properties (characteristics) and methods (actions). For example, a car object might have properties like `Color`, `Model`, and `FuelLevel`, and methods like `Drive()`, `HonkHorn()`, and `Refuel()`.
+
+Similarly, in PowerShell, objects are fundamental units that encapsulate data and functionality, making it easier to manage and manipulate information. An object in PowerShell can contain file names, usernames or sizes as data (properties), and carry functions (methods) such as copying a file or stopping a process.
+
+The traditional Command Shell’s basic commands are text-based, meaning they process and output data as plain text. Instead, when a cmdlet (pronounced command-let) is run in PowerShell, it returns objects that retain their properties and methods. This allows for more powerful and flexible data manipulation since these objects do not require additional parsing of text.
+
+## PowerShell Basics
+
+### Basic Syntax: Verb-Noun
+PowerShell commands are known as **cmdlets**. They follow a `Verb-Noun` naming convention:
+
+- **Verb**: Describes the action.
+- **Noun**: Specifies the object of the action.
+
+Examples:
+- `Get-Content`: Retrieves the content of a file.
+- `Set-Location`: Changes the current working directory.
+
+### Basic Cmdlets
+- `Get-Command`: Lists all available cmdlets, functions, aliases, and scripts.
+- `Get-Help`: Provides detailed information about cmdlets, including usage and examples.
+- `Get-Alias`: Lists all aliases (shortcuts) for cmdlets.
+
+### Finding and Installing Cmdlets
+- `Find-Module`: Searches online repositories like PowerShell Gallery.
+- `Install-Module`: Installs a module from an online repository.
+
+## Navigating the File System and Working with Files
+- `Get-ChildItem`: Lists files and directories.
+- `Set-Location`: Changes the current directory.
+- `New-Item`: Creates a new file or directory.
+- `Remove-Item`: Deletes a file or directory.
+- `Copy-Item`: Copies a file or directory.
+- `Move-Item`: Moves a file or directory.
+- `Get-Content`: Displays the contents of a file.
+
+## Piping, Filtering, and Sorting Data
+- Piping (`|`) passes **objects** from one cmdlet to another.
+- `Sort-Object`: Sorts objects by a property.
+- `Where-Object`: Filters objects based on conditions.
+- Comparison operators:
+  - `-eq`: Equal to
+  - `-ne`: Not equal to
+  - `-gt`: Greater than
+  - `-ge`: Greater than or equal to
+  - `-lt`: Less than
+  - `-le`: Less than or equal to
+- `Select-Object`: Selects specific object properties or limits output.
+- `Select-String`: Searches for text patterns in files (supports regex).
+
+## System and Network Information
+- `Get-ComputerInfo`: Retrieves comprehensive system information.
+- `Get-LocalUser`: Lists local user accounts.
+- `Get-NetIPConfiguration`: Displays network interface details.
+- `Get-NetIPAddress`: Shows configured IP addresses.
+
+## Real-Time System Analysis
+- `Get-Process`: Lists running processes.
+- `Get-Service`: Displays service statuses.
+- `Get-NetTCPConnection`: Shows active TCP connections.
+- `Get-FileHash`: Generates file hashes.
+
+## Scripting in PowerShell
+- Scripts automate repetitive tasks and can be defensive or offensive in cybersecurity.
+- Blue team use cases: Log analysis, detecting anomalies, automating scans.
+- Red team use cases: Enumeration, remote command execution, obfuscation.
+- `Invoke-Command`: Executes commands on remote systems.
+
+
