@@ -117,3 +117,108 @@ Reverse process on receiving end.
 
 - Protocol for remote terminal access.
 - Client connects to remote system via TCP port.
+
+# Networking Essentials
+
+## DHCP - Dynamic Host Configuration Protocol
+
+When connecting to a network, your device must configure:
+- **IP address** with subnet mask
+- **Router** (gateway)
+- **DNS server**
+
+### Why DHCP?
+- Automates network configuration
+- Prevents IP conflicts
+- Ideal for mobile devices
+
+**Ports:**
+- Server: UDP 67
+- Client: UDP 68
+
+### DHCP Process (DORA):
+1. **Discover** – Client broadcasts `DHCPDISCOVER`
+2. **Offer** – Server sends `DHCPOFFER`
+3. **Request** – Client sends `DHCPREQUEST`
+4. **Acknowledge** – Server sends `DHCPACK`
+
+**Example packet capture:**
+```
+0.0.0.0 → 255.255.255.255  DHCP Discover
+192.168.66.1 → 192.168.66.133  DHCP Offer
+0.0.0.0 → 255.255.255.255  DHCP Request
+192.168.66.1 → 192.168.66.133  DHCP ACK
+```
+
+DHCP provides:
+- IP address
+- Gateway
+- DNS server
+
+---
+
+## ARP - Address Resolution Protocol
+
+Maps **IP addresses (Layer 3)** to **MAC addresses (Layer 2)**.
+
+### Example:
+Host `192.168.66.89` → wants MAC for `192.168.66.1`  
+Sends ARP Request → `ff:ff:ff:ff:ff:ff` (broadcast)  
+Receives ARP Reply → `192.168.66.1 is at 44:df:65:d8:fe:6c`
+
+**Key points:**
+- Encapsulated directly in Ethernet frame (not IP/UDP)
+- Layer 2 protocol but supports Layer 3 operations
+
+---
+
+## ICMP - Internet Control Message Protocol
+
+Used for **diagnostics** and **error reporting**.
+
+### Common Tools:
+- **ping**: ICMP Echo Request (Type 8) & Echo Reply (Type 0)
+- **traceroute**: Uses TTL field & ICMP Time Exceeded (Type 11)
+
+### ping example:
+```
+ping 192.168.11.1 -c 4
+4 packets transmitted, 4 received, 0% packet loss
+rtt min/avg/max/mdev = 3.805/10.596/23.366/7.956 ms
+```
+
+### traceroute example:
+```
+traceroute example.com
+1  192.168.66.1
+2  192.168.11.1
+...
+16  93.184.215.14
+```
+
+---
+
+## Routing Protocols
+
+- **OSPF**: Link-state protocol, finds shortest path
+- **EIGRP**: Cisco proprietary, hybrid routing
+- **BGP**: Internet backbone routing between ISPs
+- **RIP**: Simple, hop-count-based
+
+---
+
+## NAT - Network Address Translation
+
+**Purpose:** Allow multiple devices to share a single public IP.
+
+**Process:**
+- Maps private IP + port → public IP + port
+- Router keeps a translation table
+
+**Example Mapping:**
+| Internal IP   | Internal Port | Public IP   | Public Port |
+|---------------|--------------|-------------|-------------|
+| 192.168.0.129 | 15401        | 212.3.4.5   | 19273       |
+
+---
+
