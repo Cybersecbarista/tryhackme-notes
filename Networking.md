@@ -220,5 +220,126 @@ traceroute example.com
 |---------------|--------------|-------------|-------------|
 | 192.168.0.129 | 15401        | 212.3.4.5   | 19273       |
 
+# Networking Core Protocol Notes
+
+## DNS - Remembering Addresses
+DNS maps domain names to IP addresses so we don’t have to memorize IPs.  
+- Operates at **Application Layer (Layer 7)** of OSI model.  
+- Uses **UDP port 53** by default, **TCP port 53** as fallback.
+
+### Common DNS Record Types:
+- **A Record**: Maps hostname to IPv4 (e.g., example.com → 172.17.2.172)
+- **AAAA Record**: Maps hostname to IPv6 (quad-A)
+- **CNAME Record**: Maps domain name to another domain name
+- **MX Record**: Specifies mail server for a domain
+
+Example lookup:
+```bash
+nslookup www.example.com
+```
+Example packet capture:
+```bash
+tshark -r dns-query.pcapng -Nn
+```
+
+---
+
+## WHOIS
+- Provides registration info about a domain (registrant name, contact, creation date, etc.).
+- Available via online tools or command-line `whois`.
+- Can use privacy services to hide personal info.
+
+---
+
+## HTTP(S) - Accessing the Web
+- **HTTP** = Hypertext Transfer Protocol
+- **HTTPS** = HTTP Secure (encrypted via TLS)
+- Relies on **TCP**.
+- Common ports: **80 (HTTP)**, **443 (HTTPS)**, sometimes 8080, 8443.
+
+### Common Methods:
+- `GET`: Retrieve data
+- `POST`: Submit data
+- `PUT`: Create/replace data
+- `DELETE`: Remove resource
+
+Example manual HTTP request with telnet:
+```bash
+telnet MACHINE_IP 80
+GET / HTTP/1.1
+Host: anything
+```
+
+---
+
+## FTP - Transferring Files
+- Designed for file transfer (faster than HTTP in some cases).
+- Default control port: **TCP 21**.
+
+### Common FTP Commands:
+- `USER`: Username
+- `PASS`: Password
+- `RETR`: Download file
+- `STOR`: Upload file
+
+---
+
+## SMTP - Sending Email
+- **Simple Mail Transfer Protocol**
+- Default port: **TCP 25**.
+
+### Common Commands:
+- `HELO`/`EHLO`: Initiate session
+- `MAIL FROM`: Sender email
+- `RCPT TO`: Recipient email
+- `DATA`: Begin message body
+- `.` (alone): End of message
+
+---
+
+## POP3 - Receiving Email
+- **Post Office Protocol v3**
+- Default port: **TCP 110**.
+- Retrieves and (usually) deletes emails from server.
+
+### Common Commands:
+- `USER <username>`
+- `PASS <password>`
+- `STAT`: Number & size of messages
+- `LIST`: List messages
+- `RETR <msg#>`: Retrieve message
+- `DELE <msg#>`: Delete message
+- `QUIT`: End session
+
+---
+
+## IMAP - Synchronizing Email
+- **Internet Message Access Protocol**
+- Default port: **TCP 143**.
+- Synchronizes mailbox across devices (keeps emails on server).
+
+### Common Commands:
+- `LOGIN <username> <password>`
+- `SELECT <mailbox>`
+- `FETCH <mail#> <data_item>`
+- `MOVE <sequence_set> <mailbox>`
+- `COPY <sequence_set> <data_item>`
+- `LOGOUT`
+
+---
+
+## Default Ports Summary Table
+
+| Protocol | Transport | Port |
+|----------|-----------|------|
+| TELNET   | TCP       | 23   |
+| DNS      | UDP/TCP   | 53   |
+| HTTP     | TCP       | 80   |
+| HTTPS    | TCP       | 443  |
+| FTP      | TCP       | 21   |
+| SMTP     | TCP       | 25   |
+| POP3     | TCP       | 110  |
+| IMAP     | TCP       | 143  |
+
 ---
 
