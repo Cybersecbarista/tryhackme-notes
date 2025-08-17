@@ -342,4 +342,118 @@ Host: anything
 | IMAP     | TCP       | 143  |
 
 ---
+# Networking Secure Protocols
+
+## TLS (Transport Layer Security)
+
+- **Historical Background**  
+  - In the early 1990s, Netscape developed SSL (Secure Sockets Layer).  
+  - SSL 2.0 released in 1995; TLS 1.0 introduced by IETF in 1999.  
+  - TLS 1.3 released in 2018 with major improvements.  
+  - TLS evolved over decades to ensure **confidentiality** and **integrity** of data.
+
+- **How TLS Works**  
+  - Operates at the **Transport Layer** of the OSI model.  
+  - Provides **encryption** and **data integrity** for communication between client and server.  
+  - Essential for secure online banking, shopping, and email.  
+  - Common protocols upgraded with TLS:  
+    - HTTP → **HTTPS**  
+    - DNS → **DoT (DNS over TLS)**  
+    - MQTT → **MQTTS**  
+    - SIP → **SIPS**  
+
+- **Certificates**  
+  - Servers request a TLS certificate via a **Certificate Signing Request (CSR)** from a **Certificate Authority (CA)**.  
+  - Certificates validate authenticity and prevent impersonation.  
+  - **Let’s Encrypt** provides free certificates.  
+  - **Self-signed certificates** exist but are not trusted by default.
+
+---
+
+## HTTPS (HTTP over TLS)
+
+- **HTTP Recap**  
+  - Operates over TCP port **80** by default.  
+  - Traffic is sent in cleartext, vulnerable to eavesdropping.  
+
+- **How HTTPS Works**  
+  - Uses TLS on top of HTTP for secure communication.  
+  - Default port: **443**.  
+  - Process after DNS resolution:  
+    1. TCP 3-way handshake  
+    2. TLS handshake  
+    3. HTTP request/response exchange  
+
+- **Secure vs Insecure Ports**  
+
+| Protocol | Insecure Port | Secure Port |
+|----------|---------------|-------------|
+| HTTP     | 80            | 443         |
+| SMTP     | 25            | 465 / 587   |
+| POP3     | 110           | 995         |
+| IMAP     | 143           | 993         |
+
+---
+
+## SSH (Secure Shell)
+
+- **Background**  
+  - TELNET (port **23**) was insecure (cleartext communication).  
+  - SSH developed in 1995 by Tatu Ylönen.  
+  - SSH-2 introduced in 1996; OpenSSH released in 1999 (widely used today).  
+
+- **Features**  
+  - Secure authentication (password, public key, 2FA).  
+  - Encryption ensures confidentiality.  
+  - Integrity protection against tampering.  
+  - **Tunneling** (VPN-like secure routing).  
+  - **X11 Forwarding** for GUI apps.  
+  - Default port: **22**.  
+
+- **Usage Example**  
+  ```bash
+  ssh username@hostname
+  ```
+
+---
+
+## SFTP vs FTPS
+
+- **SFTP (SSH File Transfer Protocol)**  
+  - Runs over **SSH (port 22)**.  
+  - Uses Unix-like commands (`get filename`, `put filename`).  
+  - Integrated within SSH suite.  
+
+- **FTPS (File Transfer Protocol Secure)**  
+  - FTP + TLS.  
+  - Uses port **990**.  
+  - Requires proper TLS certificate setup.  
+  - Harder to configure behind strict firewalls due to separate control/data channels.  
+
+---
+
+## VPN (Virtual Private Network)
+
+- **Purpose**  
+  - Provides **private and encrypted communication** over insecure networks.  
+  - Routes Internet traffic through a **VPN tunnel**.  
+
+- **Benefits**  
+  - Hides user’s IP address; only VPN server’s IP is visible.  
+  - Protects against ISP surveillance and censorship.  
+  - Allows bypassing of geo-restrictions.  
+
+- **Considerations**  
+  - Some VPN servers may **leak IP addresses** (check with DNS leak tests).  
+  - VPN may be **illegal in some countries** – always verify local laws.  
+
+---
+
+## Summary
+
+- TLS secures communication by encrypting data and verifying authenticity with certificates.  
+- HTTPS, SMTPS, POP3S, and IMAPS are secure versions of core protocols.  
+- SSH replaced TELNET with strong encryption and secure tunneling.  
+- SFTP (over SSH) and FTPS (over TLS) both secure file transfers.  
+- VPNs provide private communication but may have legal restrictions.  
 
