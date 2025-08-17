@@ -457,3 +457,119 @@ Host: anything
 - SFTP (over SSH) and FTPS (over TLS) both secure file transfers.  
 - VPNs provide private communication but may have legal restrictions.  
 
+# Wireshark: The Basics
+
+Wireshark is an open-source, cross-platform network packet analyser tool capable of sniffing and investigating live traffic and inspecting packet captures (PCAP). It is commonly used as one of the best packet analysis tools.
+
+## Tool Overview
+
+### Use Cases
+- Detecting and troubleshooting network problems, such as network load failure points and congestion.
+- Detecting security anomalies, such as rogue hosts, abnormal port usage, and suspicious traffic.
+- Investigating and learning protocol details, such as response codes and payload data.
+
+> **Note:** Wireshark is not an Intrusion Detection System (IDS). It only allows analysts to discover and investigate the packets in depth. It also doesn't modify packets; it reads them. Detecting any anomaly or network problem highly relies on the analyst's knowledge and investigation skills.
+
+## GUI and Data
+
+Wireshark GUI opens with a single all-in-one page, which helps users investigate the traffic in multiple ways. At first glance, five sections stand out:
+
+- **Toolbar:** Contains multiple menus and shortcuts for packet sniffing and processing, including filtering, sorting, summarising, exporting and merging.
+- **Display Filter Bar:** The main query and filtering section.
+- **Recent Files:** List of recently investigated files. You can recall listed files with a double-click. 
+- **Capture Filter and Interfaces:** Capture filters and available sniffing points (network interfaces). 
+- **Status Bar:** Tool status, profile and numeric packet information.
+
+## PCAP Files
+
+Packet details are shown in three different panes:
+
+- **Packet List Pane:** Summary of each packet (source/destination addresses, protocol, info). Click to select a packet for further investigation.  
+- **Packet Details Pane:** Detailed protocol breakdown of the selected packet.  
+- **Packet Bytes Pane:** Hex and ASCII representation of the selected packet.  
+
+## Colouring Packets
+
+Wireshark colours packets based on conditions and protocols to help spot anomalies quickly.  
+- **Temporary rules:** Available only during a program session.  
+- **Permanent rules:** Saved under profile preferences and persist across sessions.  
+
+Menus:  
+- *View → Coloring Rules* (create permanent rules)  
+- *View → Conversation Filter* (temporary rules)  
+
+## Traffic Sniffing
+
+- **Blue button:** Start capture  
+- **Red button:** Stop capture  
+- **Green button:** Restart capture  
+
+## Merge PCAP Files
+
+Use *File → Merge* to combine multiple PCAPs. Save the merged file before analysis.
+
+## View File Details
+
+View file metadata via *Statistics → Capture File Properties*. Useful for multiple PCAPs.  
+
+## Packet Dissection
+
+Wireshark decodes packet details by protocol. Packets can have 5–7 OSI layers.  
+
+- **Frame (Layer 1):** Physical layer details.  
+- **MAC (Layer 2):** Source & destination MAC addresses.  
+- **IP (Layer 3):** Source & destination IPv4 addresses.  
+- **Protocol (Layer 4):** TCP/UDP + ports.  
+- **Protocol Errors:** Reassembly or errors.  
+- **Application Protocol (Layer 5):** Details (HTTP, FTP, SMB).  
+- **Application Data:** Application-specific payloads.  
+
+## Packet Navigation
+
+- **Packet Numbers:** Unique identifiers for packets.  
+- **Go to Packet:** Navigate to a specific packet number.  
+- **Find Packet:** Search by filter, hex, string, or regex.  
+- **Mark Packets:** Highlight packets for analysis (resets after closing).  
+- **Packet Comments:** Add notes that persist inside PCAP.  
+
+## Exporting
+
+- **Export Packets:** Share specific packets of interest.  
+- **Export Objects (Files):** Extract transferred files (HTTP, SMB, TFTP, etc.).  
+
+## Time Display Format
+
+Default: seconds since capture start. Change via *View → Time Display Format*.  
+
+## Expert Info
+
+Wireshark highlights anomalies:  
+- **Chat (Blue):** Informational  
+- **Note (Cyan):** Notable events  
+- **Warn (Yellow):** Warnings  
+- **Error (Red):** Problems  
+
+Groups include checksum errors, malformed packets, deprecated protocol usage, etc.
+
+## Packet Filtering
+
+Two filter types:  
+- **Capture Filters:** Apply during collection.  
+- **Display Filters:** Apply during analysis.  
+
+Golden rule: *If you can click on it, you can filter and copy it.*  
+
+### Filter Types
+- **Apply as Filter:** Right-click to filter by field.  
+- **Conversation Filter:** Show only related conversation packets.  
+- **Colourise Conversation:** Highlight packets without filtering.  
+- **Prepare as Filter:** Add filter query without execution.  
+- **Apply as Column:** Add values as a column in the packet list.  
+
+## Follow Stream
+
+Reconstruct streams to see application-level data (e.g., HTTP/TCP).  
+- Client → **Red**  
+- Server → **Blue**  
+
+Once a stream filter is applied, clear it with the “X” button to view all packets again.
