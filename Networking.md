@@ -573,3 +573,163 @@ Reconstruct streams to see application-level data (e.g., HTTP/TCP).
 - Server → **Blue**  
 
 Once a stream filter is applied, clear it with the “X” button to view all packets again.
+# Tcpdump: The Basics
+
+## Overview
+The main challenge when studying networking protocols is that we don’t get a chance to see the protocol “conversations” taking place. All the technical complexities are hidden behind user interfaces. Tcpdump helps by capturing and displaying these packets in real time.
+
+Tcpdump and its libpcap library were written in C/C++ and released in the late 1980s for Unix-like systems. They are stable, fast, and foundational for many other tools. On Windows, the ported version is known as **WinPcap**.
+
+---
+
+## Basic Packet Capture
+
+- **Specify the Network Interface**
+  ```bash
+  tcpdump -i INTERFACE
+  ```
+  Example: `tcpdump -i eth0`  
+  Use `-i any` to capture on all interfaces.
+
+- **Save Captures to a File**
+  ```bash
+  tcpdump -w file.pcap
+  ```
+  Useful for later analysis in Wireshark.
+
+- **Read from a Capture File**
+  ```bash
+  tcpdump -r file.pcap
+  ```
+
+- **Limit Number of Packets**
+  ```bash
+  tcpdump -c 10
+  ```
+
+- **Disable Resolution**
+  ```bash
+  tcpdump -n     # Don’t resolve IPs
+  tcpdump -nn    # Don’t resolve IPs or ports
+  ```
+
+- **Verbose Output**
+  ```bash
+  tcpdump -v
+  tcpdump -vv
+  tcpdump -vvv
+  ```
+
+---
+
+## Filtering Expressions
+
+- **By Host**
+  ```bash
+  tcpdump host example.com
+  tcpdump src host 192.168.1.1
+  tcpdump dst host 192.168.1.50
+  ```
+
+- **By Port**
+  ```bash
+  tcpdump port 53
+  tcpdump src port 22
+  tcpdump dst port 443
+  ```
+
+- **By Protocol**
+  ```bash
+  tcpdump icmp
+  tcpdump tcp
+  tcpdump udp
+  ```
+
+- **Logical Operators**
+  - `and` → both conditions  
+  - `or` → either condition  
+  - `not` → exclude condition  
+
+  Example:  
+  ```bash
+  tcpdump host 1.1.1.1 and tcp
+  tcpdump udp or icmp
+  tcpdump not tcp
+  ```
+
+---
+
+## Advanced Filtering
+
+- **By Packet Size**
+  ```bash
+  tcpdump less 100
+  tcpdump greater 512
+  ```
+
+- **By TCP Flags**
+  ```bash
+  tcpdump "tcp[tcpflags] == tcp-syn"
+  tcpdump "tcp[tcpflags] & tcp-ack != 0"
+  tcpdump "tcp[tcpflags] & (tcp-syn|tcp-ack) != 0"
+  ```
+
+---
+
+## Displaying Packets
+
+- **Quick Output**
+  ```bash
+  tcpdump -q
+  ```
+
+- **Include MAC Addresses**
+  ```bash
+  tcpdump -e
+  ```
+
+- **Show ASCII**
+  ```bash
+  tcpdump -A
+  ```
+
+- **Show Hexadecimal**
+  ```bash
+  tcpdump -xx
+  ```
+
+- **Show Hex + ASCII**
+  ```bash
+  tcpdump -X
+  ```
+
+---
+
+## Command Summary
+
+| Command                          | Explanation                                      |
+|----------------------------------|--------------------------------------------------|
+| `tcpdump -i INTERFACE`           | Capture on a given interface                     |
+| `tcpdump -w FILE`                | Write to capture file                            |
+| `tcpdump -r FILE`                | Read from capture file                           |
+| `tcpdump -c COUNT`               | Limit number of packets captured                 |
+| `tcpdump -n`                     | Don’t resolve IPs                                |
+| `tcpdump -nn`                    | Don’t resolve IPs or ports                       |
+| `tcpdump -v, -vv, -vvv`          | Increase verbosity                               |
+| `tcpdump host IP/HOSTNAME`       | Filter by host                                   |
+| `tcpdump port PORT`              | Filter by port                                   |
+| `tcpdump icmp`                   | Filter by protocol                               |
+| `tcpdump -q`                     | Quick output                                     |
+| `tcpdump -e`                     | Show MAC addresses                               |
+| `tcpdump -A`                     | Show ASCII                                       |
+| `tcpdump -xx`                    | Show Hex                                         |
+| `tcpdump -X`                     | Show Hex + ASCII                                 |
+
+---
+
+## Pro Tips
+
+- Use `sudo` when capturing live traffic.  
+- Save captures with `-w` and analyze in Wireshark.  
+- Combine multiple filters for precision.  
+- Exit tcpdump with `CTRL + C`.  
