@@ -733,3 +733,145 @@ Tcpdump and its libpcap library were written in C/C++ and released in the late 1
 - Save captures with `-w` and analyze in Wireshark.  
 - Combine multiple filters for precision.  
 - Exit tcpdump with `CTRL + C`.  
+
+# Nmap: The Basics
+
+## Introduction
+Imagine the scenario where you are connected to a network and using various network resources, such as email and web browsing. Two questions arise:
+1. How can we discover other live devices on this network or on other networks?
+2. How can we find out the network services running on these live devices; examples include SSH and web servers?
+
+One approach is to do it manually. If asked to uncover which devices are live on the `192.168.0.1/24` network, one can use basic tools such as **ping**, **arp-scan**, or some other tool to check the 254 IP addresses. Although this network has 256 IP addresses, we counted 254 because two are reserved. Each tool has its limitations. For example, **ping** won’t give any information if the target system’s firewall blocks ICMP traffic. Moreover, **arp-scan** only works if your device is connected to the same network (Ethernet or WiFi).
+
+A very efficient solution is the **Nmap network scanner**. Nmap is an open-source tool, first published in 1997, with many powerful features added over the years.
+
+---
+
+## Host Discovery: Who is Online
+Nmap uses various sophisticated ways to discover live hosts.
+
+### Target Specification
+- IP range: `192.168.0.1-10`
+- Subnet: `192.168.0.1/24` (equivalent to `192.168.0.0-255`)
+- Hostname: `example.thm`
+
+### Ping Scan (-sn)
+```bash
+nmap -sn 192.168.66.0/24
+```
+This finds live hosts without probing services.
+
+- On local networks, Nmap uses **ARP requests**.
+- On remote networks, Nmap uses ICMP, TCP SYN/ACK, or UDP packets.
+
+### List Scan (-sL)
+```bash
+nmap -sL 192.168.0.1/24
+```
+Lists targets without scanning.
+
+---
+
+## Port Scanning: Who is Listening
+Once hosts are discovered, the next step is to identify services listening on TCP/UDP ports.
+
+### TCP Connect Scan (-sT)
+Completes the full **three-way handshake**.
+
+```bash
+nmap -sT 192.168.124.148
+```
+
+### SYN Scan (Stealth) (-sS)
+Sends only SYN, does not complete the handshake, making it stealthier.
+
+```bash
+nmap -sS 192.168.124.148
+```
+
+### UDP Scan (-sU)
+Scans for services listening on UDP.
+
+```bash
+nmap -sU 192.168.124.148
+```
+
+### Port Ranges
+- Fast mode (100 ports): `-F`
+- Range: `-p10-1024`
+- All ports: `-p-`
+
+#### Summary
+| Option | Explanation |
+|--------|-------------|
+| `-sT`  | TCP connect scan |
+| `-sS`  | SYN scan |
+| `-sU`  | UDP scan |
+| `-F`   | Fast mode |
+| `-p`   | Port range |
+
+---
+
+## Version Detection: Extract More Information
+
+### OS Detection (-O)
+```bash
+nmap -O 192.168.124.211
+```
+
+### Service & Version Detection (-sV)
+```bash
+nmap -sV 192.168.124.211
+```
+
+### Aggressive Scan (-A)
+Includes OS detection, version detection, and traceroute.
+
+### Scan All Hosts (-Pn)
+Treats all hosts as online, even if they don’t respond to discovery probes.
+
+#### Summary
+| Option | Explanation |
+|--------|-------------|
+| `-O`   | OS detection |
+| `-sV`  | Service/version detection |
+| `-A`   | Aggressive scan |
+| `-Pn`  | Treat all hosts as online |
+
+---
+
+## Timing: How Fast is Fast
+Nmap provides templates from `-T0` (paranoid) to `-T5` (insane).
+
+| Timing | Mode      | Example Duration |
+|--------|----------|------------------|
+| T0     | Paranoid | 9.8 hours |
+| T1     | Sneaky   | 27.53 minutes |
+| T2     | Polite   | 40.56 seconds |
+| T3     | Normal   | 0.15 seconds |
+| T4     | Aggressive | 0.13 seconds |
+
+Other options:
+- `--min-parallelism` / `--max-parallelism`
+- `--min-rate` / `--max-rate`
+- `--host-timeout`
+
+---
+
+## Output: Controlling What You See
+
+### Verbosity & Debugging
+- Verbose: `-v`, `-vv`, `-vvvv`
+- Debug: `-d`, `-dd`, up to `-d9`
+
+### Saving Results
+- Normal: `-oN <file>`
+- XML: `-oX <file>`
+- Grepable: `-oG <file>`
+- All formats: `-oA <basename>`
+
+---
+
+## Final Notes
+- Run Nmap with **sudo** for full features (SYN scan vs connect scan).
+- Local user runs are limited compared to root runs.
