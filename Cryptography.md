@@ -318,3 +318,248 @@ sub   cv25519 2024-08-29 [E]
 - Digital signatures & certificates ensure authenticity and trust online.
 - PGP/GPG are practical tools for secure communication & signing.
 
+# Hashing Basics
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Hash Functions](#hash-functions)
+- [Why Hashing is Important](#why-hashing-is-important)
+- [Hash Collisions](#hash-collisions)
+- [Insecure Password Storage](#insecure-password-storage)
+  - [Storing Passwords in Plaintext](#storing-passwords-in-plaintext)
+  - [Using an Insecure Encryption Algorithm](#using-an-insecure-encryption-algorithm)
+  - [Using an Insecure Hash Function](#using-an-insecure-hash-function)
+- [Using Hashing to Store Passwords](#using-hashing-to-store-passwords)
+  - [Rainbow Tables](#rainbow-tables)
+  - [Protecting Against Rainbow Tables](#protecting-against-rainbow-tables)
+  - [Example of Secure Password Storage](#example-of-secure-password-storage)
+  - [Why Not Encryption?](#why-not-encryption)
+- [Recognizing Password Hashes](#recognizing-password-hashes)
+  - [Linux Passwords](#linux-passwords)
+  - [Modern Linux Example](#modern-linux-example)
+  - [Windows Passwords](#windows-passwords)
+- [Password Cracking](#password-cracking)
+  - [Cracking with GPUs](#cracking-with-gpus)
+  - [Cracking on VMs](#cracking-on-vms)
+- [Integrity Checking](#integrity-checking)
+- [HMACs](#hmacs)
+- [Hashing vs Encoding vs Encryption](#hashing-vs-encoding-vs-encryption)
+
+---
+
+## Introduction
+Imagine you just downloaded a 6 GB file and want to know if it’s identical to the original, bit-for-bit. Or maybe a friend gave you the file on a USB drive—how do you confirm it hasn’t been altered?
+
+👉 The answer is **hashing**: by comparing the **hash values** of the two files. If the hashes are identical, you can be highly confident the files are the same.
+
+A **hash value** is a fixed-size string of characters produced by a **hash function**. A hash function takes an input of any size and produces an output of fixed length.
+
+---
+
+## Hash Functions
+- **No keys**: Hashing is not encryption. It’s one-way and not meant to be reversed.
+- **Input → Output**: Any size input becomes a fixed-size digest.
+- **Avalanche effect**: A tiny change in the input (even 1 bit) results in a very different hash.
+- **Fast to compute**, but **computationally infeasible to reverse**.
+
+### Example
+The ASCII codes:
+- `T` = `54` hex = `01010100` binary
+- `U` = `55` hex = `01010101` binary
+
+Only 1 bit is different, yet their MD5/SHA1/SHA256 hashes are completely different.
+
+### Output Format
+- Hash functions produce **raw bytes**.
+- Common encodings: **hexadecimal** (most common in CLI tools) and **base64**.
+- Tools like `md5sum`, `sha1sum`, `sha256sum`, `sha512sum` print hashes in **hex**.
+
+---
+
+## Why Hashing is Important
+- Ensures **data integrity** (detects tampering/corruption).
+- Provides **password confidentiality**:
+  - Servers don’t store plain passwords.
+  - Instead, they store the **hash** of your password.
+  - During login, the server hashes what you type and compares it with the stored hash.
+- Used every day when logging into systems.
+
+---
+
+## Hash Collisions
+- A **collision** happens when two different inputs produce the same hash output.
+- Because inputs are infinite but outputs are fixed-size, collisions are **unavoidable** (pigeonhole principle).
+- Good hash functions make collisions extremely rare.
+
+### Example
+- 4-bit hash → only \(2^4 = 16\) possible outputs.
+- If you hash 21 different inputs, at least two must collide.
+
+### Broken Hashes
+- **MD5** and **SHA-1** are broken (collisions can be engineered). 
+- Should not be used for security-critical purposes.
+
+---
+
+## Insecure Password Storage
+Bad practices:
+1. **Storing passwords in plaintext**
+   - Example: RockYou breach (14M plaintext passwords leaked).
+
+2. **Using deprecated encryption**
+   - Example: Adobe stored passwords with old encryption and plaintext hints.
+
+3. **Using insecure hash functions without salt**
+   - Example: LinkedIn 2012 breach → used unsalted SHA-1.
+
+---
+
+## Using Hashing to Store Passwords
+Instead of storing passwords directly:
+- Store a **hash of the password**.
+- On login, hash the input and compare.
+
+### Rainbow Tables
+- Precomputed lookup tables mapping hash → password.
+- Effective against unsalted hashes.
+- Example snippet:
+
+```
+Hash                                Password
+02c75fb22c75b23dc963c7eb91a062cc    zxcvbnm
+b0baee9d279d34fa1dfd71aadb908c3f    11111
+c44a471bd78cc6c2fea32b9fe028d30a    asdfghjkl
+```
+
+### Protecting Against Rainbow Tables
+- Use a **salt** (random value added to password before hashing).
+- Each user gets a **unique salt**.
+- Functions like **bcrypt**, **scrypt**, **Argon2**, and **PBKDF2** handle salting automatically.
+- Salts don’t need to be secret.
+
+### Example of Secure Password Storage
+1. Pick a secure algorithm (e.g., Argon2, bcrypt, scrypt, PBKDF2).  
+2. Generate a unique salt (e.g., `Y4UV*^(=go_!`).  
+3. Concatenate password + salt.  
+   ```
+   AL4RMc10kY4UV*^(=go_!
+   ```
+4. Hash with the chosen algorithm.  
+5. Store the **hash** and the **salt**.
+
+### Why Not Encryption?
+- Encryption is reversible (needs a key). If the key is stolen, all passwords are exposed.  
+- Hashing is one-way, safer for authentication.
+
+---
+
+## Recognizing Password Hashes
+When analyzing breaches, you may encounter hashes. Recognizing the algorithm is key.
+
+- **HashID** and similar tools can guess, but aren’t perfect.
+- Use context:  
+  - Database dumps from web apps → often **MD5** or **SHA-1**.  
+  - Windows systems → usually **NTLM (MD4 variant)**.
+
+### Linux Passwords
+- Stored in `/etc/shadow` (root-only).  
+- Old systems: `/etc/passwd` (insecure, world-readable).
+- Format: `$prefix$options$salt$hash`
+- Common prefixes:
+
+| Prefix | Algorithm |
+|--------|-----------|
+| `$y$`  | yescrypt (default in modern Linux)
+| `$gy$` | gost-yescrypt (uses GOST R 34.11-2012 + yescrypt)
+| `$7$`  | scrypt
+| `$2b$, $2y$, $2a$, $2x$` | bcrypt (Blowfish-based)
+| `$6$`  | sha512crypt (older Linux)
+| `$md5` | SunMD5 (Solaris)
+| `$1$`  | md5crypt (FreeBSD)
+
+### Modern Linux Example
+```
+root@TryHackMe# sudo cat /etc/shadow | grep strategos
+strategos:$y$j9T$76UzfgEM5PnymhQ7TlJey1$/OOSg64dhfF.TigVPdzqiFang6uZA4QA1pzzegKdVm4:19965:0:99999:7:::
+```
+Breakdown of second field:
+- `y` → algorithm: **yescrypt**
+- `j9T` → parameter
+- `76UzfgEM5PnymhQ7TlJey1` → salt
+- `/OOSg64dhfF.TigVPdzqiFang6uZA4QA1pzzegKdVm4` → hash
+
+### Windows Passwords
+- Stored in the **SAM (Security Accounts Manager)** database.  
+- Uses **NTLM** (based on MD4).  
+- Hashes look similar to MD4/MD5, so context is crucial.  
+- Tools like **mimikatz** can extract them.
+
+---
+
+## Password Cracking
+- You **cannot decrypt** a hash. You must **guess inputs, hash them, and compare**.
+- Tools: **Hashcat**, **John the Ripper**.
+
+### Cracking with GPUs
+- GPUs have thousands of cores, great for hash computations.
+- Some algorithms (like bcrypt) are designed to resist GPU speedups.
+
+### Cracking on VMs
+- VMs don’t usually have GPU passthrough.  
+- CPU cracking works, but slower.  
+- Best to run Hashcat directly on host OS with GPU.
+
+---
+
+## Integrity Checking
+- Hashing ensures files haven’t changed.  
+- Even 1‑bit difference → completely different hash.  
+- Example (Fedora ISO `sha256sum` output):
+
+```
+SHA256 (Fedora-Workstation-Live-osb-40-1.14.x86_64.iso) = 8d3cb4d99f27eb932064915bc9ad34a7529d5f...
+SHA256 (Fedora-Workstation-Live-x86_64-40-1.14.iso)   = dd1faca950d1a8c3d169adf2df4c3644ebb62f...
+```
+
+- Also used to **detect duplicate files**.
+
+---
+
+## HMACs
+- **HMAC (Hash-based Message Authentication Code)** combines:
+  - A **hash function**
+  - A **secret key**
+- Provides **authenticity** (sender is genuine) and **integrity** (data not modified).
+
+### Steps
+1. Pad the secret key to the block size of the hash function.  
+2. XOR the key with a constant (ipad).  
+3. Hash the result + message.  
+4. XOR the key with another constant (opad).  
+5. Hash the previous hash + new key.
+
+### Formula
+```
+HMAC(K, M) = H((K ⊕ opad) || H((K ⊕ ipad) || M))
+```
+
+---
+
+## Hashing vs Encoding vs Encryption
+- **Hashing**: One-way, fixed-size digest for integrity & authentication.
+- **Encoding**: Converts data into another format (e.g., Base64, UTF‑8). Reversible, not for security.
+- **Encryption**: Reversible, uses a key, ensures confidentiality.
+
+### Example: Base64 Encoding
+```
+$ echo "TryHackMe" | base64
+VHJ5SGFja01lCg==
+
+$ echo "VHJ5SGFja01lCg==" | base64 -d
+TryHackMe
+```
+
+---
+
+✨ **Summary:**  
+Hashing is a one-way process that produces a fixed-size digest. It’s critical for verifying file integrity and securely storing passwords. Use modern algorithms (bcrypt, scrypt, Argon2, PBKDF2) with unique salts to prevent rainbow table attacks. Remember: **hashing ≠ encryption ≠ encoding**.
