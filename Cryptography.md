@@ -563,3 +563,249 @@ TryHackMe
 
 ✨ **Summary:**  
 Hashing is a one-way process that produces a fixed-size digest. It’s critical for verifying file integrity and securely storing passwords. Use modern algorithms (bcrypt, scrypt, Argon2, PBKDF2) with unique salts to prevent rainbow table attacks. Remember: **hashing ≠ encryption ≠ encoding**.
+
+# John The Ripper – The Basics
+
+**John the Ripper** is a well-known, well-loved, and versatile hash-cracking tool. It combines a fast cracking speed with an extraordinary range of compatible hash types.
+
+---
+
+## 🔑 Basic Terms
+
+This guide assumes you already know some basic cryptography terms. For convenience, here’s a quick review:
+
+### What are Hashes?
+A **hash** is a way of taking a piece of data of any length and representing it in another fixed-length form. This process masks the original value of the data. The hash value is obtained by running the original data through a **hashing algorithm**.  
+
+Examples of hashing algorithms:
+- **MD4**
+- **MD5**
+- **SHA1**
+- **NTLM**
+
+**Example:**  
+
+- Input: `"polo"` → MD5 → `b53759f3ce692de7aff1b5779d3964da`  
+- Input: `"polomints"` → MD5 → `584b6e4f4586e136bc280f27f9c64f3b`
+
+---
+
+## 🔒 What Makes Hashes Secure?
+Hashing functions are **one-way functions**:
+- Easy to compute in one direction.  
+- Very difficult (computationally infeasible) to reverse.  
+
+In theoretical computer science:
+- **P (Polynomial Time):** Problems solvable in a reasonable time.  
+- **NP (Non-deterministic Polynomial Time):** Solutions are easy to verify, but may be very hard to find.  
+
+Hashing is in class **P** (easy to compute), while “un-hashing” is considered **NP** (intractable).
+
+---
+
+## ⚡ Where John Comes In
+Even though hashes can’t be directly reversed, they can be **cracked**:  
+- If you have a hash and know the algorithm, you can hash a large list of possible passwords (a **dictionary**) and compare results.  
+- If a match is found → password cracked.  
+
+This method is known as a **dictionary attack**. John the Ripper excels at performing fast brute-force and dictionary-based attacks across many hash types.
+
+---
+
+## ⚙️ Setting Up Your System
+
+### Jumbo John
+- **Jumbo John** is the most feature-rich version of John the Ripper.  
+- It’s pre-installed on **TryHackMe’s AttackBox** and **Kali Linux**.  
+- To check if installed:
+  ```bash
+  john
+  ```
+  You should see something like:
+  ```
+  John the Ripper 1.9.0-jumbo-1 [linux-gnu...]
+  ```
+
+### Installing on Linux
+- **Ubuntu/Debian:**
+  ```bash
+  sudo apt update
+  sudo apt install john -y
+  ```
+  *(May not include all Jumbo features — consider building from source for full functionality.)*
+
+- **Fedora:**
+  ```bash
+  sudo dnf install john -y
+  ```
+
+### Installing on Windows
+- Download the pre-compiled **Jumbo John** binary (32-bit or 64-bit) from the official [Openwall site](https://www.openwall.com/john/).  
+- Extract the ZIP and run from the command prompt.
+
+---
+
+## 📂 Wordlists
+To crack a hash, John needs candidate passwords to try. These come from **wordlists**.  
+
+- A **wordlist** = a file containing many possible passwords.  
+- Popular source: [SecLists on GitHub](https://github.com/danielmiessler/SecLists).  
+- On **Kali Linux** or the **TryHackMe AttackBox**, you’ll find wordlists in:
+  ```
+  /usr/share/wordlists/
+  ```
+- Example: `rockyou.txt` is one of the most famous wordlists.
+
+---
+
+## 🔨 Cracking Basic Hashes
+
+### Basic Syntax
+```bash
+john [options] [hashfile]
+```
+
+- `john` → runs the tool  
+- `[options]` → flags like `--wordlist` or `--format`  
+- `[hashfile]` → file containing the hashes  
+
+### Automatic Cracking
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt
+```
+
+- John will try to automatically detect the hash type.  
+- This can be unreliable, so sometimes you need to specify the format manually.
+
+---
+
+## 🔍 Identifying Hashes
+If John doesn’t detect the hash type correctly:
+
+- Use tools like **hash-identifier** or online hash identifiers.  
+- List all formats John supports:
+  ```bash
+  john --list=formats
+  ```
+- Example (forcing MD5):
+  ```bash
+  john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt hash.txt
+  ```
+
+---
+
+## 🔐 Cracking System Hashes
+
+### NTHash / NTLM
+- Modern Windows stores passwords as **NT Hashes** (often called **NTLM**).  
+- These are stored in the **SAM database** or Active Directory’s **NTDS.dit**.  
+- You can dump them with tools like **Mimikatz** or **impacket-secretsdump**.  
+
+**Example:**
+```bash
+john --format=NT --wordlist=/usr/share/wordlists/rockyou.txt ntlm_hashes.txt
+```
+
+### /etc/shadow (Linux)
+- Linux stores password hashes in `/etc/shadow` (root access required).  
+- Combine `/etc/passwd` and `/etc/shadow` using `unshadow`:
+  ```bash
+  unshadow /etc/passwd /etc/shadow > unshadowed.txt
+  ```
+- Then crack with John:
+  ```bash
+  john --format=sha512crypt --wordlist=/usr/share/wordlists/rockyou.txt unshadowed.txt
+  ```
+
+---
+
+## 🔤 Single Crack Mode
+Uses **usernames** or related info to generate password guesses. This is called **word mangling**.
+
+**Example with username `markus`:**
+```
+markus
+Markus1
+Markus2
+MARKus
+Markus!
+```
+
+**Usage:**
+```bash
+john --single --format=raw-sha256 hashes.txt
+```
+
+When cracking `/etc/shadow` hashes, prepend the username:
+```
+mike:1efee03cdcb96d90ad48ccc7b8666033
+```
+
+---
+
+## ⚙️ Custom Rules
+
+You can define your own **mangling rules** in the `john.conf` file.  
+
+- **Location**:  
+  - `/opt/john/john.conf` (TryHackMe AttackBox)  
+  - `/etc/john/john.conf` (if installed via package manager)  
+
+**Syntax example:**
+```
+[List.Rules:PoloPassword]
+cAz"[0-9][!£$%@]"
+```
+
+- `c` → capitalize the first letter  
+- `Az"[0-9]"` → append digits 0–9  
+- `[!£$%@]` → append one of these symbols  
+
+**Usage:**
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt --rule=PoloPassword hashes.txt
+```
+
+---
+
+## 📦 Cracking Password-Protected Archives
+
+### ZIP Files
+Convert with `zip2john`:
+```bash
+zip2john file.zip > zip_hash.txt
+```
+Crack with John:
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt zip_hash.txt
+```
+
+### RAR Files
+Convert with `rar2john`:
+```bash
+/opt/john/rar2john rarfile.rar > rar_hash.txt
+```
+Crack with John:
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt rar_hash.txt
+```
+
+---
+
+## 🔑 Cracking SSH Private Keys
+
+If an **SSH private key** (`id_rsa`) is password-protected, you can extract its hash and crack it.
+
+1. Convert with `ssh2john`:
+   ```bash
+   /opt/john/ssh2john.py id_rsa > id_rsa_hash.txt
+   ```
+2. Crack with John:
+   ```bash
+   john --wordlist=/usr/share/wordlists/rockyou.txt id_rsa_hash.txt
+   ```
+
+---
+
+✅ With these basics, you can start cracking common hash types, ZIP/RAR archives, and SSH private key passphrases using **John the Ripper**.
+
