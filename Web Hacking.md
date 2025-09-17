@@ -346,3 +346,220 @@ Referrer-Policy: strict-origin-when-cross-origin
 - **Security:** Apply security headers (CSP, HSTS, X-Content-Type-Options, Referrer-Policy) and validate/sanitize inputs and outputs.
 
 > Use tools like `securityheaders.io` to analyze real sites and practice reviewing configurations.
+
+# JavaScript Essentials
+
+## Summary
+This document contains structured notes from the **JavaScript Essentials** module. It covers core JavaScript concepts such as variables, data types, functions, loops, control flow, integration with HTML, dialogue functions, minification, obfuscation, and best practices for security.
+
+---
+
+## Table of Contents
+1. [Introduction](#introduction)
+2. [Essential Concepts](#essential-concepts)
+   - [Variables](#variables)
+   - [Data Types](#data-types)
+   - [Functions](#functions)
+   - [Loops](#loops)
+   - [Request-Response Cycle](#request-response-cycle)
+3. [JavaScript Overview](#javascript-overview)
+4. [Integrating JavaScript with HTML](#integrating-javascript-with-html)
+   - [Internal JavaScript](#internal-javascript)
+   - [External JavaScript](#external-javascript)
+   - [Verifying Internal or External JS](#verifying-internal-or-external-js)
+5. [Abusing Dialogue Functions](#abusing-dialogue-functions)
+   - [Alert](#alert)
+   - [Prompt](#prompt)
+   - [Confirm](#confirm)
+   - [How Hackers Exploit the Functionality](#how-hackers-exploit-the-functionality)
+6. [Bypassing Control Flow Statements](#bypassing-control-flow-statements)
+7. [Exploring Minified Files](#exploring-minified-files)
+   - [Deobfuscating a Code](#deobfuscating-a-code)
+8. [Best Practices](#best-practices)
+9. [Conclusion](#conclusion)
+
+---
+
+## Introduction
+JavaScript (JS) is a popular scripting language that allows developers to add interactive features to websites containing HTML and CSS. It enables interactivity such as validation, onClick actions, and animations.
+
+---
+
+## Essential Concepts
+
+### Variables
+Variables store data values.  
+- `var` → function-scoped  
+- `let` → block-scoped  
+- `const` → block-scoped, cannot be reassigned  
+
+```javascript
+let name = "Alice";
+const pi = 3.14;
+```
+
+### Data Types
+- `string` → text  
+- `number` → numeric values  
+- `boolean` → true/false  
+- `null` → empty  
+- `undefined` → variable declared but not assigned  
+- `object` → arrays, objects, etc.
+
+### Functions
+Functions group reusable code.
+
+```javascript
+function PrintResult(rollNum) {
+    alert("Username with roll number " + rollNum + " has passed the exam");
+}
+```
+
+### Loops
+Used to repeat tasks. Examples: `for`, `while`, `do...while`.
+
+```javascript
+for (let i = 0; i < 100; i++) {
+    PrintResult(rollNumbers[i]);
+}
+```
+
+### Request-Response Cycle
+In web development, the browser (client) sends a request to a server, and the server responds with data or a webpage.
+
+---
+
+## JavaScript Overview
+JS is an interpreted language executed in the browser.  
+
+Example program:
+
+```javascript
+console.log("Hello, World!");
+
+let age = 25;
+
+if (age >= 18) {
+    console.log("You are an adult.");
+} else {
+    console.log("You are a minor.");
+}
+
+function greet(name) {
+    console.log("Hello, " + name + "!");
+}
+
+greet("Bob");
+```
+
+---
+
+## Integrating JavaScript with HTML
+
+### Internal JavaScript
+Placed inside `<script>` tags within an HTML file.
+
+```html
+<script>
+    alert("Hello from internal JS!");
+</script>
+```
+
+### External JavaScript
+Stored in a `.js` file and linked with the `src` attribute.
+
+```html
+<script src="app.js"></script>
+```
+
+### Verifying Internal or External JS
+Check page source:  
+- Inline scripts → `<script>` without `src`  
+- External scripts → `<script src="file.js"></script>`
+
+---
+
+## Abusing Dialogue Functions
+
+### Alert
+Displays messages.
+
+```javascript
+alert("Hello THM");
+```
+
+### Prompt
+Asks for user input.
+
+```javascript
+let name = prompt("What is your name?");
+```
+
+### Confirm
+Asks for confirmation.
+
+```javascript
+let proceed = confirm("Do you want to proceed?");
+```
+
+### How Hackers Exploit the Functionality
+Malicious scripts can abuse alerts to disrupt users:
+
+```html
+<script>
+    for (let i = 0; i < 500; i++) {
+        alert("Hacked");
+    }
+</script>
+```
+
+---
+
+## Bypassing Control Flow Statements
+Example of an `if-else` conditional:
+
+```html
+<script>
+    let age = prompt("What is your age?");
+    if (age >= 18) {
+        document.getElementById("message").innerHTML = "You are an adult.";
+    } else {
+        document.getElementById("message").innerHTML = "You are a minor.";
+    }
+</script>
+```
+
+---
+
+## Exploring Minified Files
+
+- **Minification**: Removes whitespace, comments, and shortens code for performance.  
+- **Obfuscation**: Intentionally makes code hard to read by renaming variables, adding dummy code, etc.
+
+### Deobfuscating a Code
+Tools exist to reverse obfuscation and make code human-readable again.
+
+---
+
+## Best Practices
+- Do not rely only on **client-side validation**. Always validate on the server.  
+- Only include **trusted libraries**.  
+- **Avoid hardcoding secrets**.  
+- **Minify and obfuscate** code in production to reduce readability and size.
+
+Bad Practice:
+
+```javascript
+const privateAPIKey = 'pk_TryHackMe-1337';
+```
+
+---
+
+## Conclusion
+JavaScript is a versatile and essential tool for web development.  
+You’ve learned about:  
+- Variables, data types, functions, loops, and control flow  
+- Integration with HTML  
+- Dialogue functions and potential abuse  
+- Minification, obfuscation, and deobfuscation  
+- Best practices for security and efficiency  
