@@ -563,3 +563,487 @@ You’ve learned about:
 - Dialogue functions and potential abuse  
 - Minification, obfuscation, and deobfuscation  
 - Best practices for security and efficiency  
+# SQL Fundamentals
+
+> **Author:** CybersecBarista (David Olivares)  
+> **Last updated:** 2025-09-19
+
+A clean, GitHub‑ready summary of SQL fundamentals with examples you can copy/paste.  
+Use the Table of Contents to jump around quickly.
+
+---
+
+## Table of Contents
+- [Introduction](#introduction)
+- [Databases 101](#databases-101)
+  - [Introducing Databases](#introducing-databases)
+  - [Different Types of Databases](#different-types-of-databases)
+  - [Tables, Rows, and Columns](#tables-rows-and-columns)
+  - [Primary and Foreign Keys](#primary-and-foreign-keys)
+- [SQL](#sql)
+  - [What is SQL?](#what-is-sql)
+  - [Benefits of SQL & Relational Databases](#benefits-of-sql--relational-databases)
+- [Database & Table Statements](#database--table-statements)
+  - [CREATE DATABASE](#create-database)
+  - [SHOW DATABASES](#show-databases)
+  - [USE (Select Active DB)](#use-select-active-db)
+  - [DROP DATABASE](#drop-database)
+  - [CREATE TABLE](#create-table)
+  - [SHOW TABLES](#show-tables)
+  - [DESCRIBE / DESC](#describe--desc)
+  - [ALTER TABLE](#alter-table)
+  - [DROP TABLE](#drop-table)
+- [CRUD Operations](#crud-operations)
+  - [INSERT (Create)](#insert-create)
+  - [SELECT (Read)](#select-read)
+  - [UPDATE (Update)](#update-update)
+  - [DELETE (Delete)](#delete-delete)
+  - [CRUD Summary](#crud-summary)
+- [Clauses](#clauses)
+  - [DISTINCT](#distinct)
+  - [GROUP BY](#group-by)
+  - [ORDER BY (ASC/DESC)](#order-by-ascdesc)
+  - [HAVING](#having)
+- [Operators](#operators)
+  - [Logical Operators](#logical-operators)
+    - [LIKE](#like)
+    - [AND](#and)
+    - [OR](#or)
+    - [NOT](#not)
+    - [BETWEEN](#between)
+  - [Comparison Operators](#comparison-operators)
+    - [= (Equal)](#-equal)
+    - [!= (Not Equal)](#-not-equal)
+    - [< (Less Than)](#--less-than)
+    - [> (Greater Than)](#--greater-than)
+    - [<= and >=](#-and-)
+- [Functions](#functions)
+  - [String Functions](#string-functions)
+    - [CONCAT](#concat)
+    - [GROUP_CONCAT](#group_concat)
+    - [SUBSTRING](#substring)
+    - [LENGTH](#length)
+  - [Aggregate Functions](#aggregate-functions)
+    - [COUNT](#count)
+    - [SUM](#sum)
+    - [MAX](#max)
+    - [MIN](#min)
+- [Conclusion](#conclusion)
+- [Quick Reference](#quick-reference)
+
+---
+
+## Introduction
+Cyber security touches databases everywhere: web apps, SIEMs, auth/ACL systems, malware analysis, and more.  
+Knowing SQL helps you:
+- Understand & exploit SQL injection (offense)
+- Investigate data quickly (defense)
+- Implement access controls & constraints (hardening)
+
+This guide walks the core concepts first, then hands‑on SQL.
+
+---
+
+## Databases 101
+
+### Introducing Databases
+A **database** is an organized store of structured information that is easy to access, manipulate, and analyze.
+
+Common examples:
+- User auth data (usernames, passwords/credentials)
+- Social content (posts, comments, likes)
+- Streaming history & recommendations
+
+### Different Types of Databases
+- **Relational (SQL):** Structured, tabular (tables/rows/columns). Supports **relationships** between tables.
+- **Non‑Relational (NoSQL):** Non‑tabular (documents, key‑value, wide‑column, graphs). Flexible schema.
+
+**Example NoSQL document (MongoDB‑style):**
+```json
+{
+  "_id": "4556712cd2b2397ce1b47661",
+  "name": { "first": "Thomas", "last": "Anderson" },
+  "date_of_birth": "1964-09-02",
+  "occupation": ["The One"],
+  "steps_taken": 4738947387743977493
+}
+```
+
+**When to choose what?**
+- **Relational:** Consistent structure & high data integrity (e‑commerce, finance).
+- **NoSQL:** Variable/heterogeneous data (social media content, logs at scale).
+
+### Tables, Rows, and Columns
+A **table** models a collection (e.g., `books`).  
+- **Columns** define attributes (`id`, `name`, `published_date`) and their **data types** (e.g., `INT`, `VARCHAR`, `DATE`, etc.).  
+- **Rows** are individual records.
+
+### Primary and Foreign Keys
+- **Primary Key (PK):** Unique identifier per row (e.g., `books.id`). One PK per table.
+- **Foreign Key (FK):** Column(s) referencing a PK in another table (e.g., `books.author_id` → `authors.id`). Enables relationships & referential integrity.
+
+---
+
+## SQL
+
+### What is SQL?
+**SQL (Structured Query Language)** is the language for defining, querying, and manipulating data in **relational** databases via a DBMS (e.g., MySQL, MariaDB, PostgreSQL, Oracle, SQL Server).
+
+### Benefits of SQL & Relational Databases
+- **Fast** on large, well‑indexed datasets
+- **Readable** (English‑like syntax)
+- **Reliable** (schema, constraints, ACID properties)
+- **Flexible** querying for analytics & operations
+
+---
+
+## Database & Table Statements
+
+### CREATE DATABASE
+```sql
+CREATE DATABASE database_name;
+CREATE DATABASE thm_bookmarket_db;
+```
+
+### SHOW DATABASES
+```sql
+SHOW DATABASES;
+```
+
+### USE (Select Active DB)
+```sql
+USE thm_bookmarket_db;
+```
+
+### DROP DATABASE
+> ⚠️ Destructive!
+```sql
+DROP DATABASE database_name;
+```
+
+### CREATE TABLE
+```sql
+CREATE TABLE example_table_name (
+  example_column1 DATA_TYPE,
+  example_column2 DATA_TYPE,
+  example_column3 DATA_TYPE
+);
+
+CREATE TABLE book_inventory (
+  book_id INT AUTO_INCREMENT PRIMARY KEY,
+  book_name VARCHAR(255) NOT NULL,
+  publication_date DATE
+);
+```
+
+### SHOW TABLES
+```sql
+SHOW TABLES;
+```
+
+### DESCRIBE / DESC
+```sql
+DESCRIBE book_inventory;
+-- or
+DESC book_inventory;
+```
+
+**Sample output**
+```
++------------------+--------------+------+-----+---------+----------------+
+| Field            | Type         | Null | Key | Default | Extra          |
++------------------+--------------+------+-----+---------+----------------+
+| book_id          | int          | NO   | PRI | NULL    | auto_increment |
+| book_name        | varchar(255) | NO   |     | NULL    |                |
+| publication_date | date         | YES  |     | NULL    |                |
++------------------+--------------+------+-----+---------+----------------+
+```
+
+### ALTER TABLE
+```sql
+ALTER TABLE book_inventory
+ADD page_count INT;
+-- Also supports CHANGE/MODIFY, RENAME, DROP COLUMN, etc.
+```
+
+### DROP TABLE
+> ⚠️ Destructive!
+```sql
+DROP TABLE table_name;
+```
+
+---
+
+## CRUD Operations
+
+> Using database: `thm_books`
+
+### INSERT (Create)
+```sql
+INSERT INTO books (id, name, published_date, description)
+VALUES (1, "Android Security Internals", "2014-10-14",
+        "An In-Depth Guide to Android's Security Architecture");
+```
+
+### SELECT (Read)
+All columns:
+```sql
+SELECT * FROM books;
+```
+
+Specific columns:
+```sql
+SELECT name, description FROM books;
+```
+
+### UPDATE (Update)
+```sql
+UPDATE books
+SET description = "An In-Depth Guide to Android's Security Architecture."
+WHERE id = 1;
+```
+
+### DELETE (Delete)
+> ⚠️ Destructive!
+```sql
+DELETE FROM books WHERE id = 1;
+```
+
+### CRUD Summary
+- **Create** → `INSERT`
+- **Read** → `SELECT`
+- **Update** → `UPDATE`
+- **Delete** → `DELETE`
+
+---
+
+## Clauses
+
+### DISTINCT
+Return unique values:
+```sql
+SELECT DISTINCT name FROM books;
+```
+
+### GROUP BY
+Aggregate and group rows:
+```sql
+SELECT name, COUNT(*)
+FROM books
+GROUP BY name;
+```
+
+### ORDER BY (ASC/DESC)
+```sql
+-- Ascending (oldest → newest)
+SELECT * FROM books ORDER BY published_date ASC;
+
+-- Descending (newest → oldest)
+SELECT * FROM books ORDER BY published_date DESC;
+```
+
+### HAVING
+Filter **after** aggregation (unlike `WHERE` which filters **before**):
+```sql
+SELECT name, COUNT(*)
+FROM books
+GROUP BY name
+HAVING name LIKE '%Hack%';
+```
+
+---
+
+## Operators
+
+### Logical Operators
+
+#### LIKE
+Pattern match (often with `WHERE`):
+```sql
+SELECT *
+FROM books
+WHERE description LIKE "%guide%";
+```
+
+#### AND
+All conditions must be true:
+```sql
+SELECT *
+FROM books
+WHERE category = "Offensive Security"
+  AND name = "Bug Bounty Bootcamp";
+```
+
+#### OR
+At least one condition true:
+```sql
+SELECT *
+FROM books
+WHERE name LIKE "%Android%" OR name LIKE "%iOS%";
+```
+
+#### NOT
+Negate a condition:
+```sql
+SELECT *
+FROM books
+WHERE NOT description LIKE "%guide%";
+```
+
+#### BETWEEN
+Inclusive range:
+```sql
+SELECT *
+FROM books
+WHERE id BETWEEN 2 AND 4;
+```
+
+### Comparison Operators
+
+#### = (Equal)
+```sql
+SELECT *
+FROM books
+WHERE name = "Designing Secure Software";
+```
+
+#### != (Not Equal)
+```sql
+SELECT *
+FROM books
+WHERE category != "Offensive Security";
+```
+
+#### < (Less Than)
+```sql
+SELECT *
+FROM books
+WHERE published_date < "2020-01-01";
+```
+
+#### > (Greater Than)
+```sql
+SELECT *
+FROM books
+WHERE published_date > "2020-01-01";
+```
+
+#### <= and >=
+```sql
+-- On or before a date
+SELECT * FROM books
+WHERE published_date <= "2021-11-15";
+
+-- On or after a date
+SELECT * FROM books
+WHERE published_date >= "2021-11-02";
+```
+
+---
+
+## Functions
+
+### String Functions
+
+#### CONCAT
+```sql
+SELECT CONCAT(name, " is a type of ", category, " book.") AS book_info
+FROM books;
+```
+
+#### GROUP_CONCAT
+```sql
+SELECT category, GROUP_CONCAT(name SEPARATOR ", ") AS books
+FROM books
+GROUP BY category;
+```
+
+#### SUBSTRING
+```sql
+SELECT SUBSTRING(published_date, 1, 4) AS published_year
+FROM books;
+```
+
+#### LENGTH
+```sql
+SELECT LENGTH(name) AS name_length FROM books;
+```
+
+### Aggregate Functions
+
+#### COUNT
+```sql
+SELECT COUNT(*) AS total_books FROM books;
+```
+
+#### SUM
+```sql
+SELECT SUM(price) AS total_price FROM books;
+-- Sums non-NULL values in the price column
+```
+
+#### MAX
+```sql
+SELECT MAX(published_date) AS latest_book FROM books;
+```
+
+#### MIN
+```sql
+SELECT MIN(published_date) AS earliest_book FROM books;
+```
+
+---
+
+## Conclusion
+You covered:
+- What databases are and where they show up in cyber
+- Relational vs non‑relational tradeoffs
+- Tables, rows, columns, PKs & FKs
+- Core SQL for schema & data
+- CRUD + key clauses, operators, and functions
+
+Practice by writing small schemas and queries. Build muscle memory.
+
+---
+
+## Quick Reference
+
+```sql
+-- Databases
+CREATE DATABASE db;
+SHOW DATABASES;
+USE db;
+DROP DATABASE db;
+
+-- Tables
+CREATE TABLE t (...);
+SHOW TABLES;
+DESCRIBE t;
+ALTER TABLE t ADD col TYPE;
+DROP TABLE t;
+
+-- CRUD
+INSERT INTO t (a,b) VALUES (1,2);
+SELECT col1, col2 FROM t WHERE ...;
+UPDATE t SET col = val WHERE ...;
+DELETE FROM t WHERE ...;
+
+-- Clauses
+SELECT DISTINCT col FROM t;
+SELECT col, COUNT(*) FROM t GROUP BY col;
+SELECT * FROM t ORDER BY col ASC;  -- or DESC
+SELECT col, COUNT(*) FROM t GROUP BY col HAVING COUNT(*) > 1;
+
+-- Operators
+WHERE name LIKE '%text%';
+WHERE a BETWEEN 10 AND 20;
+WHERE cond1 AND (cond2 OR cond3);
+WHERE NOT col = 'value';
+
+-- Functions
+SELECT CONCAT(a, b);
+SELECT GROUP_CONCAT(name SEPARATOR ', ');
+SELECT SUBSTRING(str, 1, 4);
+SELECT LENGTH(str);
+SELECT COUNT(*), SUM(x), MAX(x), MIN(x) FROM t;
+```
