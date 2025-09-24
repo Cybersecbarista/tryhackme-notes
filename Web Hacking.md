@@ -1046,4 +1046,161 @@ SELECT GROUP_CONCAT(name SEPARATOR ', ');
 SELECT SUBSTRING(str, 1, 4);
 SELECT LENGTH(str);
 SELECT COUNT(*), SUM(x), MAX(x), MIN(x) FROM t;
-```
+
+```# Burp Suite: The Basics
+
+## What is Burp Suite?
+Burp Suite is a **Java-based framework** designed for web application penetration testing. It captures and manipulates all HTTP/HTTPS traffic between a browser and a web server.
+
+**Key Points:**
+- Intercept, view, and modify web requests and responses.
+- Route requests to various Burp tools.
+- Essential for manual web application testing.
+
+**Editions:**
+- **Community Edition**: Free, limited features, good for learning.
+- **Professional Edition**: Paid, includes advanced features like:
+  - Automated vulnerability scanner
+  - Full-featured Intruder (fuzzer)
+  - Project saving & report generation
+  - Built-in API integrations
+  - Burp Collaborator
+- **Enterprise Edition**: Continuous automated scanning on servers.
+
+---
+
+## Features of Burp Community
+Even with limited features, Community Edition includes:
+
+- **Proxy**: Intercept and modify requests/responses.
+- **Repeater**: Modify and resend requests.
+- **Intruder**: Brute-force/fuzz endpoints (rate limited).
+- **Decoder**: Encode/decode data.
+- **Comparer**: Compare data at word/byte level.
+- **Sequencer**: Analyze randomness of tokens (e.g., cookies).
+- **Extender**: Load extensions (Java, Python via Jython, Ruby via JRuby).
+- **BApp Store**: Download third-party modules (e.g., Logger++).
+
+---
+
+## The Dashboard
+The dashboard is divided into four quadrants:
+
+1. **Tasks** – Background tasks (Live Passive Crawl by default).
+2. **Event Log** – Shows Burp actions and connections.
+3. **Issue Activity** – Vulnerabilities found (Pro only).
+4. **Advisory** – Details on vulnerabilities (Pro only).
+
+💡 Click the **question mark icons** throughout the UI for contextual help.
+
+---
+
+## Navigation
+- **Top Menu Bar**: Switch between modules.
+- **Sub-tabs**: Module-specific options (e.g., Proxy → Intercept).
+- **Detach Tabs**: `Window → Detach` opens tabs in separate windows.
+
+**Keyboard Shortcuts:**
+| Shortcut          | Tab       |
+|-------------------|-----------|
+| `Ctrl+Shift+D`    | Dashboard |
+| `Ctrl+Shift+T`    | Target    |
+| `Ctrl+Shift+P`    | Proxy     |
+| `Ctrl+Shift+I`    | Intruder  |
+| `Ctrl+Shift+R`    | Repeater  |
+
+---
+
+## Options
+Two types of settings:
+- **Global (User)** – Persist across sessions.
+- **Project** – Session-specific (not saved in Community Edition).
+
+Navigate via **Settings → Menu**:
+- Search
+- User vs Project filter
+- Categories (e.g., Proxy, Browser, etc.)
+
+---
+
+## Burp Proxy
+Intercepts and manipulates traffic.
+
+**Key Features:**
+- Intercept requests (`Intercept is on` button).
+- Capture & log HTTP/S + WebSockets.
+- View request history.
+
+**Proxy Settings Highlights:**
+- Response Interception rules
+- Match & Replace (regex-based request/response modifications)
+
+---
+
+## Connecting through the Proxy (FoxyProxy)
+Steps (Firefox example):
+1. Install **FoxyProxy Basic**.
+2. Add new proxy config:
+   - Title: `Burp`
+   - IP: `127.0.0.1`
+   - Port: `8080`
+3. Enable proxy & start Burp.
+4. Test with a target URL (browser request intercepted).
+
+⚠️ If **Intercept is on**, your browser will hang until the request is forwarded/dropped.
+
+---
+
+## Target Tab: SiteMap & Issue Definitions
+- **Site Map**: Tree view of visited pages & endpoints.
+- **Issue Definitions**: List of known vulnerabilities with descriptions.
+- **Scope Settings**: Define target domains/IPs for cleaner captures.
+
+---
+
+## Burp Suite Browser
+- Built-in Chromium browser, pre-configured for the proxy.
+- **Settings**: Tools → Burp’s browser.
+- Run in **sandbox mode** (recommended). Root users may need to disable sandbox (⚠️ less secure).
+
+---
+
+## Scoping & Targeting
+- Add domains to scope (`Target → Right-click → Add to Scope`).
+- Limit proxy interception: `Proxy → Intercept Client Requests → "And URL is in scope"`.
+
+This keeps captures clean and focused.
+
+---
+
+## Proxying HTTPS
+To handle TLS/SSL:
+1. Go to [http://burp/cert](http://burp/cert).
+2. Download `cacert.der`.
+3. Import into Firefox:
+   - Preferences → Certificates → View Certificates → Import.
+   - Trust CA for websites.
+
+Now HTTPS sites will proxy without certificate errors.
+
+---
+
+## Example Attack: Reflected XSS
+**Target:** `http://MACHINE_IP/ticket/` form.
+
+1. Intercept request with Burp Proxy.
+2. Replace email field with XSS payload:  
+   ```html
+   <script>alert("Succ3ssful XSS")</script>
+   ```
+3. URL-encode payload (`Ctrl+U`).
+4. Forward request.
+5. Result: Pop-up alert → XSS successful!
+
+---
+
+## ✅ Summary
+Burp Suite is the industry-standard framework for **manual web app penetration testing**.  
+Community Edition provides the essentials, while Professional adds automation and enterprise-level features.  
+Mastering **Proxy, Repeater, Intruder, and Scope management** is critical for real-world testing.
+
