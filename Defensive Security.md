@@ -150,4 +150,163 @@ Security solutions minimize manual effort by centralizing information and automa
 
 The right technology depends on organizational **threat surface** and **resources**.
 
+# Digital Forensics Fundamentals
+
+## Introduction
+Forensics is the application of methods and procedures to investigate and solve crimes. The branch of forensics that investigates cyber crimes is known as **digital forensics**. Cyber crime is any criminal activity conducted on or using a digital device. Several tools and techniques are used to investigate digital devices thoroughly after any crime to find and analyze evidence for necessary legal action.
+
+Digital devices have solved many of our problems, but due to their vast usage, an increase in **digital crimes (cyber crimes)** has also been observed.
+
+---
+
+## Case Example
+Law enforcement raids a bank robber’s home and finds digital devices (laptop, mobile, hard drive, USB). The **digital forensics team** collects evidence and investigates, discovering:
+- A digital map of the bank (planning evidence)
+- Documents showing entrance/escape routes and physical security controls
+- Media files (photos/videos of previous robberies)
+- Chat groups and call records related to the robbery
+
+This evidence supports **legal proceedings** and demonstrates the workflow from evidence collection to reporting.
+
+---
+
+## The Four Phases of Digital Forensics (NIST Framework)
+The **National Institute of Standards and Technology (NIST)** defines a general digital forensics process with four main phases:
+
+1. **Collection**
+   - Identify and collect relevant digital devices (PCs, USBs, cameras, etc.).
+   - Preserve integrity — ensure no tampering occurs.
+   - Maintain detailed documentation of collected items.
+
+2. **Examination**
+   - Filter large data sets to isolate relevant data (e.g., files by date, user, or type).
+
+3. **Analysis**
+   - Correlate evidence to draw chronological conclusions about the incident.
+
+4. **Reporting**
+   - Document methodology, findings, and recommendations.
+   - Include both technical details and executive summaries.
+
+---
+
+## Types of Digital Forensics
+Each type uses unique collection and analysis methods:
+
+- **Computer Forensics:** Investigating computers and storage media.
+- **Mobile Forensics:** Extracting data such as texts, calls, GPS, and apps from mobile devices.
+- **Network Forensics:** Investigating network traffic and logs.
+- **Database Forensics:** Analyzing breaches or modifications within databases.
+- **Cloud Forensics:** Investigating data stored in cloud environments.
+- **Email Forensics:** Examining email communications for phishing or fraud evidence.
+
+---
+
+## Evidence Acquisition Best Practices
+
+### 1. Proper Authorization
+- Obtain legal approval before collecting any data.
+- Unauthorized evidence may be inadmissible in court.
+
+### 2. Chain of Custody
+A **chain of custody document** ensures accountability and data integrity. It should include:
+- Evidence description (name, type)
+- Collector name
+- Date/time of collection
+- Storage location
+- Access log (who accessed it and when)
+
+### 3. Use of Write Blockers
+Write blockers prevent modification of data during acquisition.  
+Example: Attaching a suspect’s hard drive via a write blocker ensures timestamps and file integrity remain intact.
+
+---
+
+## Windows Forensics: Disk and Memory Imaging
+
+Most cases involve **desktop/laptop systems** running Windows.  
+Forensics images are **bit-by-bit copies** of the system:
+
+### Disk Image
+- Contains non-volatile data (files, history, documents).  
+- Survives restarts.
+
+### Memory Image
+- Contains volatile data (open files, processes, network connections).  
+- Must be captured **first**, as it disappears on shutdown.
+
+### Popular Tools
+| Tool | Purpose | Description |
+|------|----------|-------------|
+| **FTK Imager** | Disk Imaging | GUI-based; can create and analyze disk images. |
+| **Autopsy** | Analysis | Open-source platform; supports keyword search, deleted file recovery, metadata extraction, etc. |
+| **DumpIt** | Memory Imaging | CLI tool to capture RAM dumps. |
+| **Volatility** | Memory Analysis | Open-source framework for analyzing volatile memory; supports multiple OS platforms. |
+
+---
+
+## Metadata and File Analysis
+
+### Document Metadata (PDF Example)
+Metadata stores information such as creator, creation date, and software used.
+
+Example using `pdfinfo`:
+```bash
+pdfinfo DOCUMENT.pdf
+```
+Output example:
+```
+Creator:        Microsoft® Word for Office 365
+Producer:       Microsoft® Word for Office 365
+CreationDate:   Wed Oct 10 21:47:53 2018 EEST
+Pages:          20
+Encrypted:      no
+PDF version:    1.7
+```
+This reveals details like creation date and originating software.
+
+Install on Kali:
+```bash
+sudo apt install poppler-utils
+```
+
+---
+
+### Image Metadata (EXIF Data)
+**EXIF (Exchangeable Image File Format)** stores metadata in image files, including:
+- Camera/phone model
+- Capture date/time
+- GPS coordinates (latitude & longitude)
+
+Example using `exiftool`:
+```bash
+exiftool IMAGE.jpg
+```
+Output:
+```
+GPS Position : 51 deg 31' 4.00" N, 0 deg 5' 48.30" W
+```
+
+Coordinates can be entered into Google Maps or Bing Maps to locate where the image was taken.
+
+Install on Kali:
+```bash
+sudo apt install libimage-exiftool-perl
+```
+
+---
+
+## Summary
+- **Digital Forensics** applies scientific processes to investigate cyber crimes.
+- Follow NIST’s four-phase model: Collection → Examination → Analysis → Reporting.
+- Preserve integrity using **authorization, chain of custody, and write blockers**.
+- Use specialized tools (FTK Imager, Autopsy, DumpIt, Volatility) for disk/memory forensics.
+- Analyze **metadata** for critical insights in documents and images.
+
+---
+
+**Author:** David Olivares  
+**Platform:** [TryHackMe - Digital Forensics Fundamentals](https://tryhackme.com/)  
+**Category:** Cybersecurity / Digital Forensics
+
 ---
