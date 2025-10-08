@@ -309,4 +309,172 @@ sudo apt install libimage-exiftool-perl
 **Platform:** [TryHackMe - Digital Forensics Fundamentals](https://tryhackme.com/)  
 **Category:** Cybersecurity / Digital Forensics
 
+---# 🛡️ Incident Response Fundamentals — TryHackMe Notes
+
+**Author:** David Olivares  
+**Platform:** TryHackMe  
+**Topic:** Incident Response Fundamentals  
+**Date:** 2025  
+
 ---
+
+## 🧠 Introduction
+
+Imagine living in a heavily insecure street with expensive items in your home. Naturally, you’d hire security guards, install CCTV cameras, and hide valuables underground — all proactive measures for protection.
+
+Now, bring that concept into the **digital realm**. Organizations must also prepare against cyberattacks, plan preventive defenses, and have strategies ready **for when prevention fails**.  These preparations form the foundation of **Incident Response (IR)** — the systematic process of handling cybersecurity incidents from start to finish.
+
+---
+
+## ⚙️ Events, Alerts, and Incidents
+
+Every computing device runs multiple **processes**, both interactive and non‑interactive, that generate **events** (logged records of actions). Security solutions collect and analyze these events to detect suspicious patterns.
+
+When something abnormal is detected, a **security alert** is triggered.
+
+### 🔍 Alert Types
+
+| Type | Description | Example |
+|------|--------------|----------|
+| **False Positive** | Alert triggered for a benign activity | A data backup to cloud storage triggers a data‑exfiltration alert |
+| **True Positive** | Alert that correctly identifies malicious behavior | A phishing email detected and confirmed as a real attack |
+
+A **True Positive** becomes a **Security Incident** once verified by the security team.
+
+### 🚨 Incident Severity Levels
+Incidents are prioritized based on their impact:
+- **Critical** – Requires immediate action; business‑stopping impact
+- **High** – Major damage risk but not total outage
+- **Medium** – Localized or contained damage
+- **Low** – Minimal risk or easily mitigated
+
+---
+
+## 💥 Types of Security Incidents
+
+| Type | Description |
+|------|--------------|
+| **Malware Infections** | Malicious software infecting systems via files or executables |
+| **Security Breaches** | Unauthorized access to confidential data |
+| **Data Leaks** | Exposure of sensitive data (accidental or intentional) |
+| **Insider Attacks** | Attacks initiated by trusted personnel within an organization |
+| **Denial of Service (DoS)** | Flooding systems or networks to make services unavailable |
+
+🔸 Each type carries different impacts depending on the organization’s infrastructure and data value.
+
+---
+
+## 🧩 Incident Response Frameworks
+
+Because incidents vary in nature and complexity, a **structured response process** is essential. Two major frameworks provide this structure:
+
+- **SANS Incident Response (PICERL)**
+- **NIST Incident Response Lifecycle**
+
+Both outline logical steps to ensure incidents are handled efficiently and lessons are learned.
+
+---
+
+### 🧭 SANS Incident Response (PICERL)
+
+| Phase | Description | Example |
+|--------|--------------|----------|
+| **P – Preparation** | Build teams, tools, and procedures before incidents occur | Employee phishing‑awareness training |
+| **I – Identification** | Detect and confirm abnormal activities | Large outbound data transfer discovered and verified as compromise |
+| **C – Containment** | Limit the spread and impact of the incident | Isolate infected host, disable compromised accounts |
+| **E – Eradication** | Remove root cause and clean environment | Perform deep malware scans to remove threats |
+| **R – Recovery** | Restore systems, validate, and resume operations | Rebuild system, restore data from backups |
+| **L – Lessons Learned** | Review, document, and improve for the future | Post‑incident review and security improvements |
+
+#### PICERL Flow Diagram
+```
+Preparation → Identification → Containment → Eradication → Recovery → Lessons Learned
+```
+
+---
+
+### 🧭 NIST Incident Response Lifecycle
+
+NIST defines **four phases**, similar in spirit but more condensed:
+
+| Phase | Description |
+|--------|--------------|
+| **Preparation** | Establish policies, tools, and response capabilities |
+| **Detection & Analysis** | Identify incidents using security solutions and logs |
+| **Containment, Eradication & Recovery** | Respond, eliminate, and restore |
+| **Post‑Incident Activity** | Review and improve the overall process |
+
+#### NIST Flow Diagram
+```
+Preparation → Detection & Analysis → Containment/Eradication/Recovery → Post‑Incident Activity
+```
+
+---
+
+### 🧮 Comparison: SANS vs NIST
+
+| Aspect | SANS (6 Phases) | NIST (4 Phases) |
+|---------|------------------|-----------------|
+| Level of Detail | More granular | More streamlined |
+| Emphasis | Focuses on full lifecycle and documentation | Focuses on detection and analysis |
+| Use Case | Suited for large, mature SOC teams | Useful for standard corporate or government environments |
+
+---
+
+## 🧾 Incident Response Plan (IRP)
+
+An **Incident Response Plan** is a formal document that defines how an organization prepares for, detects, and responds to incidents.
+
+### 📋 Key Components
+- **Roles & Responsibilities** — Defined tasks for IR team members
+- **Response Methodology** — Steps to identify, contain, and recover
+- **Communication Plan** — Coordination with stakeholders and law enforcement
+- **Escalation Path** — Defined hierarchy for incident severity and response
+
+---
+
+## 🧰 Tools for Detection and Response
+
+| Tool | Full Form | Function |
+|------|------------|-----------|
+| **SIEM** | Security Information and Event Management | Centralizes log collection and correlation for incident detection |
+| **AV** | Antivirus | Detects and removes known malware |
+| **EDR** | Endpoint Detection and Response | Detects, contains, and remediates advanced threats on endpoints |
+
+These tools play critical roles across various stages of the IR lifecycle — from detection to containment.
+
+---
+
+## 📘 Playbooks & Runbooks
+
+**Playbooks** are general step‑by‑step guides for specific types of incidents.
+
+### Example: Phishing Email Playbook
+1. Notify stakeholders of the phishing incident.
+2. Analyze email headers and body for indicators of compromise (IoCs).
+3. Examine any attachments and determine malicious intent.
+4. Check whether attachments were opened.
+5. Isolate infected systems from the network.
+6. Block the malicious sender.
+
+**Runbooks**, on the other hand, are more technical — outlining the precise commands or actions analysts should perform during investigation and containment.
+
+---
+
+## 🧩 Summary
+
+In this TryHackMe room, we covered:
+- The concept of **events → alerts → incidents**
+- **True Positive** vs **False Positive** detection
+- **Incident types** and how severity is classified
+- The **SANS (PICERL)** and **NIST** frameworks for structured response
+- The role of **SIEM, AV, and EDR tools** in detection and remediation
+- The importance of **Incident Response Plans** and **Playbooks** for rapid, coordinated action
+
+> 🧠 **Key Takeaway:** Incident Response isn’t just reaction — it’s preparation, process, and progression. Each incident is an opportunity to refine your defenses.
+
+---
+
+### ✍️ Authored by David Olivares
+**TryHackMe Learning Journey | Cybersecurity Notes | © 2025**
+
