@@ -477,4 +477,143 @@ In this TryHackMe room, we covered:
 
 ### ✍️ Authored by David Olivares
 **TryHackMe Learning Journey | Cybersecurity Notes | © 2025**
+# Logs Fundamentals
 
+---
+
+## 🔍 Overview
+Attackers are clever. They often avoid leaving traces to prevent detection. However, through careful analysis of system **logs**, security teams can reconstruct what happened, determine how an attack was executed, and sometimes even identify who was responsible.
+
+Logs act as **digital footprints**, recording activities that occur within a system — both legitimate and malicious. Investigating these logs allows analysts to trace actions and uncover the story behind an incident.
+
+---
+
+## 🧩 Real-World Analogy
+Imagine investigating a robbery in a snowy cabin:
+- **Broken door** → indicates forced entry
+- **Footprints** → shows who entered and from where
+- **CCTV footage** → provides evidence of the perpetrator
+
+By piecing these clues together, the police identify the criminal. Similarly, in cybersecurity, **logs** are the digital equivalent of these clues.
+
+---
+
+## 🧠 Use Cases of Logs
+| **Use Case** | **Description** |
+|---------------|-----------------|
+| **Security Events Monitoring** | Detect anomalous behavior using real-time monitoring. |
+| **Incident Investigation & Forensics** | Perform root-cause analysis and identify what happened during incidents. |
+| **Troubleshooting** | Diagnose errors in systems or applications using log records. |
+| **Performance Monitoring** | Analyze logs for insights into system or application performance. |
+| **Auditing & Compliance** | Maintain a verifiable record of activities for accountability and regulation. |
+
+---
+
+## 🧾 Log Categories
+When investigating, it’s inefficient to look through every log file. Logs are categorized by type to make searching easier.
+
+| **Log Type** | **Usage** | **Examples** |
+|--------------|-----------|---------------|
+| **System Logs** | Troubleshoot OS-level issues | System startup/shutdown, driver load, hardware events |
+| **Security Logs** | Investigate security incidents | Authentication events, account changes, policy changes |
+| **Application Logs** | Monitor app-specific events | User interactions, app updates, errors |
+| **Audit Logs** | Track system and user changes | Data access, policy enforcement, system changes |
+| **Network Logs** | Monitor network traffic | Incoming/outgoing traffic, firewall events |
+| **Access Logs** | Record resource access | Web server access, API access, DB access |
+
+> 💡 **Note:** Applications and services may create their own unique log types.
+
+---
+
+## 🪟 Windows Event Logs
+Like other OSs, **Windows** maintains categorized logs accessible via the **Event Viewer** utility.
+
+### Main Windows Log Types
+- **Application Logs** → Record application-related events (errors, warnings, compatibility issues)
+- **System Logs** → Record OS events (driver/hardware issues, startup/shutdown, services)
+- **Security Logs** → Record security events (authentication, account changes, policy modifications)
+
+### Opening Event Viewer
+1. Click **Start → Search 'Event Viewer'**
+2. Navigate to **Windows Logs** to view the main log categories.
+
+### Event Fields
+| **Field** | **Description** |
+|------------|------------------|
+| **Description** | Detailed information of the event |
+| **Log Name** | Name of the log file |
+| **Logged** | Timestamp of the event |
+| **Event ID** | Unique identifier for a specific activity |
+
+### Common Windows Event IDs
+| **Event ID** | **Description** |
+|---------------|------------------|
+| 4624 | User account successfully logged in |
+| 4625 | Failed login attempt |
+| 4634 | User account logged off |
+| 4720 | New user account created |
+| 4724 | Password reset attempt |
+| 4722 | User account enabled |
+| 4725 | User account disabled |
+| 4726 | User account deleted |
+
+> 🎯 Tip: Use the **Filter Current Log** feature to search by specific Event IDs (e.g., `4624` for successful logins).
+
+---
+
+## 🌐 Web Server Access Logs (Apache Example)
+Web servers log every request made to them. These logs are typically stored in:
+```
+/var/log/apache2/access.log
+```
+### Sample Fields
+| **Field** | **Description** | **Example** |
+|------------|-----------------|--------------|
+| **IP Address** | Source of the request | 172.16.0.1 |
+| **Timestamp** | Time of request | [06/Jun/2024:13:58:44] |
+| **HTTP Method** | Requested action | GET |
+| **URL** | Requested resource | /products |
+| **Status Code** | Server response | 200, 404, 500 |
+| **User-Agent** | Browser and OS details | Mozilla/5.0 (Windows NT 10.0...) |
+
+---
+
+## 💻 Manual Log Analysis in Linux
+Log analysis can be done manually using common Linux command-line tools.
+
+### 1. `cat` — View File Contents
+Display contents of a log file:
+```bash
+cat access.log
+```
+Combine multiple log files:
+```bash
+cat access1.log access2.log > combined_access.log
+```
+
+### 2. `grep` — Search for Patterns
+Search for a specific IP or keyword inside logs:
+```bash
+grep "192.168.1.1" access.log
+```
+
+### 3. `less` — Paginated Log Viewing
+View logs page-by-page for easier navigation:
+```bash
+less access.log
+```
+
+- Press **Spacebar** → Next page
+- Press **b** → Previous page
+- Press **/** followed by a term → Search
+- Press **n / N** → Move between results
+
+---
+
+## 🧠 Summary
+- Logs are the **digital footprints** of all system and user activities.
+- Categorizing logs improves **investigation efficiency**.
+- **Windows Event Viewer** simplifies viewing and filtering.
+- **Command-line utilities** like `cat`, `grep`, and `less` enable efficient log analysis.
+
+> 🔒 **Key Takeaway:** Effective log analysis bridges the gap between raw data and actionable cybersecurity insight.
