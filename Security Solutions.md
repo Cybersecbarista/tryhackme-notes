@@ -224,3 +224,151 @@ Deleting:
 Proceed with operation (y|n)? y
 Rule deleted (v6)
 These different utilities can be used to manage Netfilter. Choosing the right utility for the Linux OS depends on multiple factors, such as familiarity with the OS and your requirements. 
+# IDS Fundamentals
+
+## Overview
+An **Intrusion Detection System (IDS)** monitors network or host activity to detect suspicious or malicious behavior that bypasses other security measures such as firewalls. It alerts security administrators when unusual activity is detected but does not take direct action to stop the activity.
+
+Think of a **firewall** as a gatekeeper controlling what enters or leaves a building, and the **IDS** as the surveillance camera system that detects suspicious behavior once someone is inside.
+
+---
+
+## IDS Deployment Modes
+
+### 1. Host Intrusion Detection System (HIDS)
+- Installed directly on individual hosts.
+- Detects threats related to that specific system.
+- Provides deep visibility into host activities.
+- Resource intensive and difficult to manage across large networks.
+
+### 2. Network Intrusion Detection System (NIDS)
+- Monitors overall network traffic across multiple hosts.
+- Detects malicious activity throughout the entire network.
+- Provides centralized detection and visibility.
+
+**Key Difference:**  
+HIDS focuses on a single host, while NIDS provides a network-wide perspective.
+
+---
+
+## IDS Detection Modes
+
+### 1. Signature-Based IDS
+- Detects known attacks using pre-defined patterns (signatures).
+- Fast and reliable for known threats.
+- Cannot detect **zero-day attacks** (no existing signature).
+- Example: Snort (uses rule files containing signatures).
+
+### 2. Anomaly-Based IDS
+- Learns normal system/network behavior (baseline) and flags deviations.
+- Capable of detecting **zero-day attacks**.
+- Can generate **false positives** due to legitimate but unusual behavior.
+- Accuracy improves through manual tuning and baseline refinement.
+
+### 3. Hybrid IDS
+- Combines **signature-based** and **anomaly-based** detection.
+- Uses the best of both worlds: quick known threat detection and new threat awareness.
+- Reduces the limitations of either approach.
+
+---
+
+## Snort IDS
+**Snort** is a widely used open-source IDS developed in 1998. It supports both **signature** and **anomaly-based** detection methods.
+
+### Snort Key Files
+Located in `/etc/snort/` directory:
+```
+classification.config  reference.config  snort.debian.conf
+community-sid-msg.map  rules             threshold.conf
+gen-msg.map            snort.conf        unicode.map
+```
+
+- **snort.conf**: Main configuration file.
+- **rules folder**: Contains built-in and custom detection rule files.
+
+### Snort Rule Example
+```bash
+alert icmp any any -> 127.0.0.1 any (msg:"Loopback Ping Detected"; sid:10003; rev:1;)
+```
+
+#### Rule Components
+| Component | Description |
+|------------|-------------|
+| **Action** | What Snort does when the rule triggers (e.g., `alert`). |
+| **Protocol** | Protocol to monitor (e.g., `ICMP`). |
+| **Source IP / Port** | Origin of the traffic (e.g., `any`). |
+| **Destination IP / Port** | Destination (e.g., `$HOME_NET`). |
+| **msg** | Alert message displayed when triggered. |
+| **sid** | Unique signature ID for the rule. |
+| **rev** | Revision number of the rule. |
+
+---
+
+## Snort Modes
+
+| Mode | Description | Use Case |
+|------|--------------|----------|
+| **Packet Sniffer Mode** | Reads and displays network packets without analysis. | Used for network monitoring/troubleshooting. |
+| **Packet Logging Mode** | Logs network traffic and detections for later analysis (PCAP format). | Forensics and root cause analysis. |
+| **NIDS Mode** | Actively monitors live network traffic using rules and signatures. | Real-time intrusion detection. |
+
+**Primary IDS Functionality:** NIDS mode is the most relevant for real-time detection.
+
+---
+
+## Running Snort for Detection
+
+### Start Snort
+```bash
+sudo snort -q -l /var/log/snort -i lo -A console -c /etc/snort/snort.conf
+```
+
+- `-i lo`: Interface to monitor (e.g., loopback).
+- `-A console`: Output alerts to the console.
+- `-c`: Specifies configuration file.
+
+### Test Rule
+Ping your loopback interface to trigger the rule:
+```bash
+ping 127.0.0.1
+```
+**Example Output:**
+```
+07/24-10:46:52.401504  [**] [1:1000001:1] Loopback Ping Detected [**] [Priority: 0] {ICMP} 127.0.0.1 -> 127.0.0.1
+```
+
+---
+
+## Running Snort on PCAP Files
+Use Snort for forensic analysis on historical traffic logs:
+```bash
+sudo snort -q -l /var/log/snort -r Task.pcap -A console -c /etc/snort/snort.conf
+```
+Replace `Task.pcap` with your desired packet capture file.
+
+---
+
+## Key Takeaways
+- **IDS = Network surveillance camera**: Detects, but doesn’t block.
+- **HIDS vs NIDS**: Host-level vs Network-level focus.
+- **Signature-based**: Known threats only.  
+  **Anomaly-based**: Detects new/unknown threats.  
+  **Hybrid**: Combines both.
+- **Snort** is a powerful open-source IDS tool supporting real-time and offline analysis.
+- Use **NIDS mode** for real-time alerts and **packet logging mode** for investigations.
+
+---
+
+### ✅ Summary
+| Concept | Summary |
+|----------|----------|
+| **IDS Role** | Detect intrusions and alert administrators. |
+| **Detection Methods** | Signature, Anomaly, Hybrid. |
+| **Deployment Types** | HIDS, NIDS. |
+| **Snort Functionality** | Packet capture, alerting, logging. |
+| **Custom Rules** | Define detection behavior manually. |
+
+---
+**Author:** David Olivares  
+**Topic:** TryHackMe – IDS Fundamentals  
+**Date:** October 2025
