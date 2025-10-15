@@ -372,3 +372,150 @@ Replace `Task.pcap` with your desired packet capture file.
 **Author:** David Olivares  
 **Topic:** TryHackMe – IDS Fundamentals  
 **Date:** October 2025
+# Vulnerability Scanner Overview
+
+## 1. Understanding Vulnerabilities and Patching
+
+Imagine living in a small, lovely house. One day, you notice that your roof has many small holes. If not treated, these holes can cause significant problems — rainwater may leak in, damaging furniture, and dust or insects could enter the home. These weaknesses are **vulnerabilities**. Fixing them is known as **patching**.
+
+In digital systems, vulnerabilities exist within software or hardware components. These weaknesses can be exploited by attackers to compromise systems or networks. Unlike physical holes, digital vulnerabilities are often invisible unless you actively look for them. Once identified, patches are applied to fix these weaknesses and protect against exploitation.
+
+---
+
+## 2. What Is Vulnerability Scanning?
+
+**Vulnerability scanning** is the process of inspecting digital systems to find weaknesses. Organizations carry critical data, so regular scanning is essential to prevent exploitation and comply with regulatory standards.
+
+Manual scanning is inefficient and prone to error, especially in large networks. **Automated vulnerability scanners** simplify this process: provide an IP or network range, and the tool will scan for vulnerabilities and produce detailed reports.
+
+---
+
+## 3. Types of Vulnerability Scans
+
+### Authenticated vs. Unauthenticated Scans
+
+| Authenticated Scans | Unauthenticated Scans |
+|----------------------|------------------------|
+| Require credentials for the target host. | Do not require credentials (only IP). |
+| Identify vulnerabilities accessible to users with host access. | Identify vulnerabilities accessible to external attackers. |
+| Provide deeper visibility into configurations and applications. | Easier to set up and less resource-intensive. |
+| Example: scanning an internal database with login credentials. | Example: scanning a public website. |
+
+Authenticated scans are typically used for internal scanning, while unauthenticated scans are often used for external scanning.
+
+### Internal vs. External Scans
+
+| Internal Scans | External Scans |
+|----------------|----------------|
+| Conducted from inside the network. | Conducted from outside the network. |
+| Detect vulnerabilities exploitable within the internal environment. | Detect vulnerabilities accessible from the internet. |
+| Example: scanning employee workstations. | Example: scanning a company’s public web server. |
+
+---
+
+## 4. Popular Vulnerability Scanners
+
+### **Nessus**
+- Developed in 1998 as an open-source project, later acquired by **Tenable** (2005).
+- Offers extensive scanning options; available in free and paid versions.
+- On-premises deployment with professional support and advanced reporting.
+
+### **Qualys**
+- Founded in 1999 as a **cloud-based** vulnerability management solution.
+- Provides continuous vulnerability scanning, compliance checks, and asset management.
+- Cloud architecture removes maintenance overhead and supports automatic alerts.
+
+### **Nexpose**
+- Created by **Rapid7** in 2005 as a subscription-based scanner.
+- Continuously discovers assets and assigns **risk scores** based on asset value and vulnerability impact.
+- Supports both **on-premises** and **hybrid deployments**.
+
+### **OpenVAS (Open Vulnerability Assessment System)**
+- Open-source solution by **Greenbone Security**.
+- Uses a known-vulnerability database and provides core scanning features.
+- Ideal for small organizations or individuals.
+
+---
+
+## 5. Reporting and Remediation
+
+All vulnerability scanners generate detailed **reports** listing vulnerabilities, severity scores, and remediation suggestions. Advanced tools allow exporting reports in multiple formats (PDF, CSV, XML, etc.) and often include fix recommendations.
+
+When choosing a scanner, consider factors like:
+- Scope of systems
+- Resource availability
+- Depth of analysis
+- Budget and compliance needs
+
+---
+
+## 6. CVE and CVSS
+
+### **CVE (Common Vulnerabilities and Exposures)**
+- Developed by **MITRE Corporation**.
+- Provides a **unique ID** (e.g., `CVE-2024-9374`) for each discovered vulnerability.
+- Allows organizations to reference and track vulnerabilities in a global database.
+
+**CVE Structure:**
+```
+CVE-[Year]-[Arbitrary Digits]
+Example: CVE-2024-9374
+```
+
+### **CVSS (Common Vulnerability Scoring System)**
+- Provides a **severity score** (0–10) for each vulnerability.
+- Factors include impact, exploitability, and scope.
+
+| CVSS Score Range | Severity Level |
+|------------------|----------------|
+| 0.0–3.9 | Low |
+| 4.0–6.9 | Medium |
+| 7.0–8.9 | High |
+| 9.0–10 | Critical |
+
+---
+
+## 7. OpenVAS: Installation and Usage Guide
+
+### **Installation Using Docker (Ubuntu Example)**
+```bash
+sudo apt install docker.io
+sudo docker run -d -p 443:443 --name openvas immauss/openvas
+```
+This command installs and runs OpenVAS in a Docker container, simplifying dependency management.
+
+### **Accessing OpenVAS**
+Open a browser and visit:
+```
+https://127.0.0.1
+```
+Log in using your credentials to access the OpenVAS dashboard.
+
+### **Creating a New Scan Task**
+1. Navigate to **Scans → Tasks**.
+2. Click the star icon → **New Task**.
+3. Provide task name and target details (e.g., IP address).
+4. Choose a scan type and click **Create**.
+5. Start the scan using the **Play** button in the task’s Actions column.
+
+### **Viewing Scan Results**
+- Once the scan completes, status will show **Done**.
+- Click on the task name to view vulnerability details.
+- Vulnerabilities are listed with severity ratings and descriptions.
+- Reports can be exported in multiple formats.
+
+---
+
+## 8. Summary
+- Vulnerabilities are weaknesses that can lead to system compromise.
+- **Vulnerability scanning** identifies these weaknesses proactively.
+- Tools like **Nessus**, **Qualys**, **Nexpose**, and **OpenVAS** automate detection and reporting.
+- **CVE** provides standardized identifiers for vulnerabilities, while **CVSS** assigns severity scores.
+- Regular scanning and timely patching form the foundation of strong cybersecurity hygiene.
+
+---
+
+**Author:** David Olivares  
+**Topic:** Vulnerability Scanner Overview  
+**Category:** TryHackMe Notes  
+**GitHub Repository:** [Cybersecbarista/tryhackme-notes](https://github.com/Cybersecbarista/tryhackme-notes)
